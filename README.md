@@ -29,16 +29,6 @@ We have also built a detailed [online documentation](https://tao-wang-pmtnet-omn
 - torch==1.13.1
 - fair-esm==2.0.0
 
-## Enviroment Setup
-```shell
-conda env create -f pMTnet_Omni_env.yml
-```
-
-## Installation 
-```shell
-conda activate pMTnet_Omni
-pip install pMTnet_Omni
-```
 
 ## Quick Start Guide 
 1. Go to [our website](http://lce-test.biohpc.swmed.edu/pmtnet) to download the supporting data to your local directory, say <i>./data</i>. 
