@@ -12,30 +12,17 @@
 
 Please refer to our paper for more details: [pMTnet Omni paper link here](www.google.com)
 
-We host the supporting data as well the online tool [here](http://lce-test.biohpc.swmed.edu/pmtnet), where you can find all the members of the pMTnet 
+We host the online tool on [DBAI](http://lce-test.biohpc.swmed.edu/pmtnet), where you can find all the members of the pMTnet 
 family, including [pMTnet V1](https://github.com/tianshilu/pMTnet). 
 
-We have also built a detailed [online documentation](https://tao-wang-pmtnet-omni.readthedocs.io/en/latest/) where we walk you through every single step from installation to final affinity prediction. It also includes a step-by-step instruction on input format. 
+We have also built a detailed [online documentation](https://pmtnet-omni-document.readthedocs.io/en/latest/) where we guide you step-by-step on how to format your data so it can be accpted by our algorithm.
 
 ## Model Overview 
 ![Model Overview](/docs/source/images/overview.png)
 
-## Dependencies 
-- numpy==1.22.4
-- pandas==1.5.2
-- matplotlib==3.6.2
-- scikit-learn==1.0.2
-- tqdm==4.64.1
-- torch==1.13.1
-- fair-esm==2.0.0
-
 
 ## Quick Start Guide 
-1. Go to [our website](http://lce-test.biohpc.swmed.edu/pmtnet) to download the supporting data to your local directory, say <i>./data</i>. 
-
-<b>Caution: </b> the data file is around 30Gb. Make sure you have enough space on your hard drive. 
-
-2. Prepare your dataset so that it looks somewhat like the following:
+1. Prepare your dataset so that it looks somewhat like the following:
 ![Sample df](/docs/source/images/sample_df.png)
 Along with the main program, we also published 5 datasets under the `./validation_data` folder. Feel free 
 to use those datasets to check if you TCR namings, Amino Acid sequences, and MHC namings conform with our 
@@ -43,15 +30,12 @@ standard.
 
 **_NOTE:_** If the corresponding AA sequences are NOT provided AND the TCR names (same for MHC) can NOT be found in these datasets, the record WILL be dropped. 
 
-3. Say your dataset is under <i>./df.csv</i>. In your terminal, run 
-```shell
-python -m pMTnet_Omni --data_dir ./data --user_data_path ./df.csv --output_file_path ./df_results.csv
-```
+2. Go to [our website](http://lce-test.biohpc.swmed.edu/pmtnet) and upload your data
 
-4. An example output would look like this:
+3. An example output would look like this:
 ![Sample output](/docs/source/images/sample_output.png)
 
-For a more in-depth exploration including the usage of interactive Python, input format, and API reference, check out our [online documentation](https://tao-wang-pmtnet-omni.readthedocs.io/en/latest/). 
+For a more in-depth explanation on input format, check out our [online documentation](https://pmtnet-omni-document.readthedocs.io/en/latest/). 
 
 ## CITATION HERE 
 
