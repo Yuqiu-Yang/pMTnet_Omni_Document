@@ -1,0 +1,5 @@
+sphinx==5.0.2
+sphinx-rtd-theme
+sphinxcontrib-autoprogram
+sphinx-git
+sphinx-autodoc-typehints
