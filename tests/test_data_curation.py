@@ -125,6 +125,7 @@ def test_encode_mhc_seq(df, output_path):
         df = check_column_names(df)
         df = infer_mhc_info(df)
         df, _, _ = check_mhc(df, mhc_path="./validation_data/valid_mhc.txt")
+        df['mhcaseq'] = ['AA' for i in range(4)]
         df['mhca_use_seq'] = [True for i in range(4)]
         encode_mhc_seq(df=df, output_path=output_path)
         assert True

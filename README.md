@@ -20,6 +20,23 @@ We have also built a detailed [online documentation](https://pmtnet-omni-documen
 ## Model Overview 
 ![Model Overview](/docs/source/images/overview.png)
 
+## Dependencies 
+- numpy==1.22.4
+- pandas==1.5.2
+- tqdm==4.64.1
+- torch==1.13.1
+- fair-esm==2.0.0
+
+## Enviroment Setup
+```shell
+conda env create -f pMTnet_Omni_Document_env.yml
+```
+
+## Installation 
+```shell
+conda activate pMTnet_Omni_Document
+pip install pMTnet_Omni_Document
+```
 
 ## Quick Start Guide 
 1. Prepare your dataset so that it looks somewhat like the following:
@@ -29,6 +46,8 @@ to use those datasets to check if you TCR namings, Amino Acid sequences, and MHC
 standard.
 
 **_NOTE:_** If the corresponding AA sequences are NOT provided AND the TCR names (same for MHC) can NOT be found in these datasets, the record WILL be dropped. 
+
+2. 
 
 2. Go to [our website](http://lce-test.biohpc.swmed.edu/pmtnet) and upload your data
 
