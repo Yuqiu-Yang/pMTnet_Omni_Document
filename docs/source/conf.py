@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'pMTnet_Omni'
+project = 'pMTnet_Omni_Document'
 copyright = '2022, Yi Han, Yuqiu Yang, Tao Wang'
 author = 'Yi Han, Yuqiu Yang, Tao Wang'
 

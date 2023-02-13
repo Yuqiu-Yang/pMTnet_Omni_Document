@@ -23,6 +23,11 @@ amino acids are
    * - mhcseq
      - The sequence(s) of amino acids of the corresponding MHC
 
+.. note:: 
+  For ``vaseq``, ``vbseq``, and ``mhcseq``, if the corresponding gene/allele names in 
+  ``va``, ``vb``, and ``mhc`` are provided, the sequences will be ignored. **Only** when 
+  the names are not available will we utilize the information given in these three columns. 
+
 Overall 
 -----------
 The **one-letter code** of the following 20 Amino Acids are 
@@ -45,10 +50,12 @@ When making affinity predictions, **pMTnet Omni** actually uses values contained
 these two columns instead of their names contained in ``va`` and ``vb`` columns.
 
 .. note:: 
-    If only ``va`` (resp. ``vb``) is provided, we will perform a 
-    look-up using our `reference database` provided `here <http://lce-test.biohpc.swmed.edu/pmtnet>`_. 
-    However, if ``vaseq`` (resp. ``vbseq``) is provided, we will 
-    directly use the sequences with minimal data curation
+    If ``va`` (resp. ``vb``) is provided, we will perform a 
+    look-up using our `reference database` provided on 
+    `DBAI <http://lce-test.biohpc.swmed.edu/pmtnet>`_ **regardless** 
+    of the presence of ``vaseq`` (resp. ``vbseq``). **Only** when 
+    ``va`` (resp. ``vb``) is missing will the algorithm utilize the 
+    actual sequence. 
 
 Therefore, it's vital to make sure that the format of 
 your input sequences conforms with ours. One such mismatch
@@ -56,6 +63,7 @@ could happen when the users **truncate the CDR3 part of a sequence**.
 
 .. warning:: 
     **Do not truncate the CDR3 part of a sequence.**
+
 
 cdr3a, cdr3b 
 ---------------

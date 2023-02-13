@@ -6,7 +6,7 @@ This unfortunately means that the input files need to conform with some certain 
 File Format 
 ---------------
 Although the default format that **pMTnet Omni** expects is `.csv`, since 
-under the hood, the `read_user_df` method calls the `read_csv` function from 
+under the hood, we use the `read_csv` function from 
 the `pandas` package, **pMTnet Omni** accepts inputs of major file formats, as 
 long as the corresponding `sep` argument is supplied. 
 

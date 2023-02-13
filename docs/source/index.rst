@@ -24,43 +24,22 @@ For a more detailed exploration of our model, please refer to `our paper <https:
 
 *pMTnet Omni Paper citation here*
 
-Our GitHub repo can be found `here <https://github.com/Yuqiu-Yang/pMTnet_Omni>`_
+The online tool are hosted on `DBAI <http://lce-test.biohpc.swmed.edu/pmtnet>`_ where you can upload
+your own dataset and we will crunch the numbers for you. 
 
-The supporting data as well as the online tool are hosted on `DBAI <http://lce-test.biohpc.swmed.edu/pmtnet>`_
+In this document, we will mainly focus on two aspects:
 
-Dependencies
---------------
+Input Format
+   A series of detailed explanations will be provided to help you organize your dataset so that 
+   the input can be correctly recognized by **pMTnet Omni**.
 
-* python>=3.9
-* numpy==1.22.4
-* pandas==1.5.2
-* matplotlib==3.6.2
-* scikit-learn==1.0.2
-* tqdm==4.64.1
-* torch==1.13.1
-* fair-esm==2.0.0
-
-Quick (but sloppy) Installation
---------------------------------
-
-.. note:: 
-   This will install *pMTnet_Omni* to your `base` environment. 
-   For a more in-depth instruction, check out our :doc:`installation_guide`. 
-
-.. code:: bash
-   
-   pip install pMTnet_Omni
+Input Parameters 
+   **pMTnet Omni** can be configured in a various ways to suit your own need. We will walk through 
+   the parameters you can use to alter the behaviors of our algorithm.
 
 
 User Guide / Tutorial
 =====================
-.. toctree::
-   :maxdepth: 1
-   :caption: Get Started
-
-   installation_guide
-   quick_start
-
 .. toctree::
    :maxdepth: 3
    :caption: Input Format
@@ -69,9 +48,8 @@ User Guide / Tutorial
 
 .. toctree::
    :maxdepth: 1
-   :caption: Guided Tutorial
+   :caption: Input Parameters 
 
-   tutorial/input_check
    tutorial/details
 
 .. toctree::
