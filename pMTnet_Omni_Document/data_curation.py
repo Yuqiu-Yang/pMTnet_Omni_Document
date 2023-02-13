@@ -495,10 +495,8 @@ def read_file(file_path: str,
     # Check aa sequences
     df = check_amino_acids_columns(df=df)
     
-    if any(df['mhca_use_seq']) or any(df['mhcb_use_seq']):
-        print("Some MHCs can not be found in the reference data, we will encode the corresponding sequences.\n")
-        if output_path is None:
-            file_name = os.path.splitext(file_path)[0]
-            output_path = file_name+"_mhc_seq_dict.pickle"
-        encode_mhc_seq(df=df, output_path=output_path)
+    if output_path is None:
+        file_name = os.path.splitext(file_path)[0]
+        output_path = file_name+"_mhc_seq_dict.pickle"
+    encode_mhc_seq(df=df, output_path=output_path)
     return df

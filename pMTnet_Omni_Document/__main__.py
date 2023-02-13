@@ -105,10 +105,9 @@ def main(cmdargs: argparse.Namespace):
     df, df_antigen_dropped = check_peptide(df=df)
     # Check aa sequences
     df = check_amino_acids_columns(df=df)
-    if any(df['mhca_use_seq']) or any(df['mhcb_use_seq']):
-        print("Some MHCs can not be found in the reference data, we will encode the corresponding sequences.\n")
-        output_path = output_file_name+"_mhc_seq_dict.pickle"
-        encode_mhc_seq(df=df, output_path=output_path)
+    
+    output_path = output_file_name+"_mhc_seq_dict.pickle"
+    encode_mhc_seq(df=df, output_path=output_path)
     df.to_csv(cmdargs.output_file_path, sep=',', index=False)
     invalid_v_df.to_csv(output_file_name+"_invalid_v.csv", sep=',', index=False)
     df_mhc_alpha_dropped.to_csv(output_file_name+"_mhc_alpha_dropped.csv", sep=',', index=False)
