@@ -3,24 +3,27 @@ import pandas as pd
 from copy import deepcopy
 
 from pMTnet_Omni_Document.data_curation import check_column_names,\
-                                                check_species,\
-                                                check_va_vb,\
-                                                infer_mhc_info,\
-                                                check_mhc,\
-                                                check_peptide,\
-                                                check_amino_acids_columns,\
-                                                read_file
+    check_species,\
+    check_va_vb,\
+    infer_mhc_info,\
+    check_mhc,\
+    check_peptide,\
+    check_amino_acids_columns,\
+    read_file
 
 df_0 = pd.read_csv('./tests/test_data/test_df.csv', sep=',')
 common_column_names = ["va", "cdr3a", "vaseq", "vb", "cdr3b", "vbseq",
-                        "peptide", "mhc", "mhcseq",
-                        "tcr_species", "pmhc_species"]
+                       "peptide", "mhc", "mhcseq",
+                       "tcr_species", "pmhc_species"]
 ########################
-# Column names 
+# Column names
+
+
 @pytest.mark.parametrize("df, expected, success_assertion", [
     (df_0, common_column_names, True),
     (df_0.drop(columns=["va", "vb", 'mhc']), common_column_names, True),
-    (df_0.drop(columns=["vaseq", "vbseq", 'mhcseq']), common_column_names, True),
+    (df_0.drop(columns=["vaseq", "vbseq", 'mhcseq']),
+     common_column_names, True),
     (df_0.drop(columns=['cdr3a']), None, False),
     (df_0.drop(columns=['mhc', 'mhcseq']), None, False),
     (df_0.drop(columns=['va', 'vaseq']), None, False),
@@ -51,24 +54,30 @@ def test_check_species(tcr_species, pmhc_species):
         df['pmhc_species'] = pmhc_species
     try:
         check_species(df)
-        assert False 
+        assert False
     except:
         assert True
-        
+
 ########################
 # va vb
+
+
 @pytest.mark.parametrize("df, expected", [
     (df_0, 0)
 ])
 def test_check_va_vb(df, expected):
     df, invalid_df = check_va_vb(df, background_tcrs_dir="./validation_data/")
     assert invalid_df.shape[0] == expected
-    
+
 ########################
-# mhc_info 
+# mhc_info
+
+
 @pytest.mark.parametrize("mhc, mhcseq, expected, success_assertion", [
-    (['A', 'DR', 'D', 'IA'], ['AA', 'AA', 'AA', 'AA/AA'], ['human class i', 'human class ii', 'mouse class i', 'mouse class ii'], True),
-    (['DR/DR', '', 'IA', ''], ['AA/AA', 'AA/AA', 'AA/AA', 'AA/AA'], ['human class ii', 'human', 'mouse class ii', 'mouse'], True),
+    (['A', 'DR', 'D', 'IA'], ['AA', 'AA', 'AA', 'AA/AA'], ['human class i',
+     'human class ii', 'mouse class i', 'mouse class ii'], True),
+    (['DR/DR', '', 'IA', ''], ['AA/AA', 'AA/AA', 'AA/AA', 'AA/AA'],
+     ['human class ii', 'human', 'mouse class ii', 'mouse'], True),
     (['', 'Z', 'D', 'IA'], ['', '', 'AA', 'AA/AA'], None, False),
     (['A', 'DR', '', 'Z'], ['AA', 'AA', '', ''], None, False),
 ])
@@ -89,6 +98,8 @@ def test_infer_mhc_info(mhc, mhcseq, expected, success_assertion):
 
 ########################
 # mhc
+
+
 @pytest.mark.parametrize("df", [
     (df_0)
 ])
@@ -99,22 +110,26 @@ def test_check_mhc(df):
         df, _, _ = check_mhc(df, mhc_path="./validation_data/valid_mhc.txt")
         assert True
     except:
-        assert False 
+        assert False
 
 ########################
 # peptide
+
+
 @pytest.mark.parametrize("df", [
     (df_0)
 ])
 def test_check_peptide(df):
-    try: 
+    try:
         df, _ = check_peptide(df)
         assert True
     except:
-        assert False 
+        assert False
 
 ########################
-# aa columns 
+# aa columns
+
+
 @pytest.mark.parametrize("df", [
     (df_0)
 ])
@@ -124,20 +139,17 @@ def test_check_amino_acids_columns(df):
 
 
 ########################
-# read_file 
+# read_file
 @pytest.mark.parametrize("", [
     ()
 ])
 def test_read_file():
     try:
-        df = read_file(file_path = './tests/test_data/test_df.csv',
-                       background_tcr_dir="./validation_data/",
+        df = read_file(file_path='./tests/test_data/test_df.csv',
+                       background_tcrs_dir="./validation_data/",
                        mhc_path="./validation_data/valid_mhc.txt",
                        sep=",",
                        header=0)
         assert True
     except:
-        assert False 
-
-
-
+        assert False

@@ -185,7 +185,7 @@ def check_va_vb(df: pd.DataFrame,
             mouse_df.at[i, 'vaseq'] = mouse_df.at[i, 'vaseq_ref']
         if vb != '':
             mouse_df.at[i, 'vbseq'] = mouse_df.at[i, 'vbseq_ref']
-    
+
     mouse_df = mouse_df.drop(columns=['vaseq_ref', 'vbseq_ref']).fillna('')
     invalid_mouse_df = mouse_df[(mouse_df['vaseq'] == '') |
                                 (mouse_df['vbseq'] == '')].reset_index(drop=True)
