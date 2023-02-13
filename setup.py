@@ -33,28 +33,6 @@ class PypiCommand(distutils.cmd.Command):
         os.system("twine upload dist/{} dist/{}".format(wheel_file, tar_file))
 
 
-class CondaCommand(distutils.cmd.Command):
-    
-    description = "Build and upload for conda."
-    user_options = []
-    
-    def initialize_options(self):
-        pass
-    
-    
-    def finalize_options(self):
-        pass
-    
-    
-    def run(self):
-        try:
-            shutil.rmtree("dist_conda/")
-        except FileNotFoundError:
-            pass
-        os.system("conda build . --output-folder dist_conda/")
-        os.system("anaconda upload ./dist_conda/noarch/pMTnet_Omni_Document-{}-py_0.tar.bz2".format(VERSION))
-
-
 setup(
     name="pMTnet_Omni_Document",
     version=VERSION,
@@ -84,8 +62,7 @@ setup(
         "Intended Audience :: Science/Research",
     ],
     cmdclass={
-        "pypi": PypiCommand,
-        "conda": CondaCommand
+        "pypi": PypiCommand
     }
 )
 
