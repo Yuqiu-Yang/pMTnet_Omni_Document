@@ -7,6 +7,7 @@ from pMTnet_Omni_Document.data_curation import check_column_names,\
     check_va_vb,\
     infer_mhc_info,\
     check_mhc,\
+    encode_mhc_seq,\
     check_peptide,\
     check_amino_acids_columns,\
     read_file
@@ -113,6 +114,24 @@ def test_check_mhc(df):
         assert False
 
 ########################
+# encode mhc sequences 
+
+
+@pytest.mark.parametrize("df, output_path", [
+    (df_0, "./tests/test_data/test_df_mhc_seq_dict.pickle")
+])
+def test_encode_mhc_seq(df, output_path):
+    try:
+        df = check_column_names(df)
+        df = infer_mhc_info(df)
+        df, _, _ = check_mhc(df, mhc_path="./validation_data/valid_mhc.txt")
+        df['mhca_use_seq'] = [True for i in range(4)]
+        encode_mhc_seq(df=df, output_path=output_path)
+        assert True
+    except:
+        assert False
+
+########################
 # peptide
 
 
@@ -148,6 +167,7 @@ def test_read_file():
         df = read_file(file_path='./tests/test_data/test_df.csv',
                        background_tcrs_dir="./validation_data/",
                        mhc_path="./validation_data/valid_mhc.txt",
+                       output_path=None,
                        sep=",",
                        header=0)
         assert True

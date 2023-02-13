@@ -66,8 +66,11 @@ setup(
     packages=["pMTnet_Omni_Document"],
     python_requires=">=3.9",
     install_requires=[
+        'numpy==1.22.4',
         'pandas==1.5.2',
-        'tqdm==4.64.1'
+        'tqdm==4.64.1',
+        'torch==1.13.1',
+        'fair-esm==2.0.0'
     ],
     test_requires=[
         'pytest==7.1.2',

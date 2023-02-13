@@ -136,4 +136,4 @@ dmypy.json
 # VS code 
 .vscode
 
-test_df_*.csv
+test_df_*

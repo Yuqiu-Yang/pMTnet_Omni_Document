@@ -1,6 +1,11 @@
 # Data IO
 import os
 import pandas as pd
+import pickle 
+
+# PyTorch module 
+import torch 
+import esm 
 
 # String operation
 import re
@@ -9,7 +14,7 @@ import re
 from tqdm import tqdm
 
 # Typing
-from typing import Tuple
+from typing import Tuple, Optional
 
 
 def check_column_names(df: pd.DataFrame) -> pd.DataFrame:
@@ -347,12 +352,17 @@ def check_mhc(df: pd.DataFrame,
     with open(mhc_path, 'r') as f:
         mhc_dic_keys = f.read().splitlines()
     mhc_dic_keys = set(mhc_dic_keys)
+    # If the mhc names can not be found in our reference 
+    # AND no sequences are provided 
+    # We drop the record 
     df_mhc_alpha_dropped = df[(~df["mhca"].isin(mhc_dic_keys)) &
                               (df['mhcaseq'] == '')].reset_index(drop=True)
     df_mhc_beta_dropped = df[(~df["mhcb"].isin(mhc_dic_keys)) &
                              (df['mhcbseq'] == '')].reset_index(drop=True)
     df = df[(df["mhca"].isin(mhc_dic_keys)) | (df['mhcaseq'] != '')]
     df = df[(df["mhcb"].isin(mhc_dic_keys)) | (df['mhcbseq'] != '')]
+    # For those mhcs that we can not find in our reference 
+    # we mark them for future process 
     df['mhca_use_seq'] = ~df['mhca'].isin(mhc_dic_keys)
     df['mhcb_use_seq'] = ~df['mhcb'].isin(mhc_dic_keys)
 
@@ -362,6 +372,46 @@ def check_mhc(df: pd.DataFrame,
     return df, df_mhc_alpha_dropped, df_mhc_beta_dropped
 
 
+def encode_mhc_seq(df: pd.DataFrame,
+                   output_path: str) -> None:
+    """Encode MHC sequences 
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        A pandas dataframe containing pairing data
+    output_path : str
+        The path to the pickle file 
+    """
+    # Create the ESM2 model 
+    # This will download the model if this is the first time 
+    # Otherwise, we just load the model
+    model, alphabet = esm.pretrained.esm2_t33_650M_UR50D()
+    batch_converter = alphabet.get_batch_converter()
+    model.eval()
+    # We create a new dictionary
+    # The keys would be the sequences (since we are using the 
+    # sequences)
+    # The values would be the ESM embedding 
+    mhc_seq_dict = {}
+    for chain in ['a', 'b']:
+        for i in tqdm(range(df.shape[0])):
+            use_seq = df.at[i, 'mhc'+chain+'_use_seq']
+            mhcseq = df.at[i, 'mhc'+chain+'seq']
+            # If we have not seen the sequence before and 
+            # we are using it, we use esm algorithm to encode it 
+            if (mhcseq not in mhc_seq_dict) and use_seq:
+                data = [(mhcseq, mhcseq)]
+                _, _, batch_tokens = batch_converter(data)
+                with torch.no_grad():
+                    results = model(batch_tokens, repr_layers=[33], return_contacts=True)
+                    mhcseq_encoding = results["representations"][33].numpy()[0]
+                mhc_seq_dict[mhcseq] = mhcseq_encoding
+    
+    with open(output_path, 'wb') as handle:
+        pickle.dump(mhc_seq_dict, handle, protocol=pickle.HIGHEST_PROTOCOL) 
+            
+        
 def check_peptide(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
     # antigen peptide longer than 30 will be dropped
@@ -408,6 +458,7 @@ def check_amino_acids_columns(df: pd.DataFrame) -> pd.DataFrame:
 def read_file(file_path: str,
               background_tcrs_dir: str = "./validation_data/",
               mhc_path: str = "./validation_data/valid_mhc.txt",
+              output_path: Optional[str]=None,
               **kwargs) -> pd.DataFrame:
     """Reads in user dataframe and performs some basic data curation 
 
@@ -419,7 +470,8 @@ def read_file(file_path: str,
         The directory with background TCR datasets 
     mhc_path: str
         The file path to valid mhcs 
-
+    output_path: Optional[str]
+        The path to the pickle file 
     Returns
     -------
     pd.DataFrame
@@ -442,4 +494,11 @@ def read_file(file_path: str,
     df, _ = check_peptide(df=df)
     # Check aa sequences
     df = check_amino_acids_columns(df=df)
+    
+    if any(df['mhca_use_seq']) or any(df['mhcb_use_seq']):
+        print("Some MHCs can not be found in the reference data, we will encode the corresponding sequences.\n")
+        if output_path is None:
+            file_name = os.path.splitext(file_path)[0]
+            output_path = file_name+"_mhc_seq_dict.pickle"
+        encode_mhc_seq(df=df, output_path=output_path)
     return df
