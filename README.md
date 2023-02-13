@@ -19,6 +19,8 @@ family, including [pMTnet V1](https://github.com/tianshilu/pMTnet).
 
 We have also built a detailed [online documentation](https://pmtnet-omni-document.readthedocs.io/en/latest/) where we guide you step-by-step on how to format your data so it can be accpted by our algorithm.
 
+**_NOTE:_** This is the documentation for the data curation supporting tool for <b>pMTnet Omni</b>. Use this BEFORE you upload your dataset to [DBAI](http://lce-test.biohpc.swmed.edu/pmtnet).
+
 ## Model Overview 
 ![Model Overview](/docs/source/images/overview.png)
 
