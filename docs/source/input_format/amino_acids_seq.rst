@@ -1,6 +1,6 @@
 Amino Acids Sequences Format
 =============================
-Columns that **pMTnet Omni** expect to contain sequences of 
+Columns that ``read_file`` expect to contain sequences of 
 amino acids are 
 
 .. list-table:: Columns of Amino Acids (AA) Sequences
@@ -23,10 +23,19 @@ amino acids are
    * - mhcseq
      - The sequence(s) of amino acids of the corresponding MHC
 
-.. note:: 
-  For ``vaseq``, ``vbseq``, and ``mhcseq``, if the corresponding gene/allele names in 
-  ``va``, ``vb``, and ``mhc`` are provided, the sequences will be ignored. **Only** when 
-  the names are not available will we utilize the information given in these three columns. 
+.. warning:: 
+  For ``vaseq`` (resp. ``vbseq``), if the corresponding gene/allele names in 
+  ``va`` (resp. ``vb``) are provided, the sequences will be ignored. If the names 
+  can not be found in the reference data provided in ``./validation_data``, the 
+  corresponding records will be dropped. **Only** when 
+  the names are not supplied will we utilize the information given in these two columns. 
+  
+.. warning:: 
+  For ``mhcseq``, if the corresponding gene/allele names in 
+  ``mhc`` are provided, we will first look up the corresponding
+  sequences using our own reference data. **Only** when 
+  the names can not be found in our reference data will we utilize 
+  the information given in this column. 
 
 Overall 
 -----------
@@ -46,18 +55,22 @@ accepted by **pMTnet Omni**.
 
 vaseq, vbseq 
 ---------------
-When making affinity predictions, **pMTnet Omni** actually uses values contained in 
-these two columns instead of their names contained in ``va`` and ``vb`` columns.
 
-.. note:: 
+.. warning:: 
     If ``va`` (resp. ``vb``) is provided, we will perform a 
-    look-up using our `reference database` provided on 
-    `DBAI <http://lce-test.biohpc.swmed.edu/pmtnet>`_ **regardless** 
+    look-up using our `reference database` provided in 
+    ``./validation_data`` **regardless** 
     of the presence of ``vaseq`` (resp. ``vbseq``). **Only** when 
     ``va`` (resp. ``vb``) is missing will the algorithm utilize the 
     actual sequence. 
 
-Therefore, it's vital to make sure that the format of 
+.. tip:: 
+    For new TCR sequences (for instance when performing TCR optimization),
+    simply supply ``vaseq`` and ``vbseq`` and leave ``va`` and 
+    ``vb`` blank.
+
+When using information provided in these two columns, minimal 
+data curation will be performed. Therefore, it's vital to make sure that the format of 
 your input sequences conforms with ours. One such mismatch
 could happen when the users **truncate the CDR3 part of a sequence**.
 
@@ -86,7 +99,7 @@ mhcseq
 ----------------
 We have already computed the ESM embeddings of around 20,000
 MHCs. A value (one or two sequences) in this column is used only when we can not find 
-the corresponding value in the ``mhc`` column in our database. 
+the corresponding value in the ``mhc`` column in our database or is missing. 
 When this occurs, the ESM2 algorithm will be invoked to encode 
 the sequences. Here we elaborate on the requirements we impose on the format 
 of MHC **amino acid sequences**. For the MHC names, please refer to 

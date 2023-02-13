@@ -105,6 +105,19 @@ def check_column_names(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def check_species(df: pd.DataFrame) -> pd.DataFrame:
+    """Check the TCR species and pMHC species 
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        A pandas dataframe containing pairing data 
+
+    Returns
+    -------
+    pd.DataFrame
+        A pandas dataframe with curated data 
+
+    """
 
     # We first perform some basic data curation to left some burden off the users
     df["tcr_species"] = df["tcr_species"].str.lower().str.replace(' ', '').str.replace(
@@ -122,7 +135,21 @@ def check_species(df: pd.DataFrame) -> pd.DataFrame:
 
 def check_va_vb(df: pd.DataFrame,
                 background_tcrs_dir: str = "./validation_data/") -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Check VA and VB
 
+    Parameters
+    ----------
+    df : pd.DataFrame
+        A pandas dataframe containing pairing data
+    background_tcrs_dir : str, optional
+        The path to background tcrs data, by default "./validation_data/"
+
+    Returns
+    -------
+    Tuple[pd.DataFrame, pd.DataFrame]
+        A pandas dataframe with curated data and a pandas 
+        dataframe with invalid data 
+    """
     ##################################################
     # The basic logic is
     # If va vb are provided, then we will look up
@@ -370,6 +397,125 @@ def check_mhc(df: pd.DataFrame,
     print("Number of rows in processed dataset: " + str(df.shape[0]))
 
     return df, df_mhc_alpha_dropped, df_mhc_beta_dropped
+      
+        
+def check_peptide(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Check peptide columns 
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        A pandas dataframe with pairing data 
+
+    Returns
+    -------
+    Tuple[pd.DataFrame, pd.DataFrame]
+        A pandas dataframe with curated data and 
+        a dataframe with dropped data 
+    """
+    # antigen peptide longer than 30 will be dropped
+    df_antigen_dropped = df[df.peptide.str.len() > 30].reset_index(drop=True)
+    df = df[df.peptide.str.len() <= 30].reset_index(drop=True)
+    return df, df_antigen_dropped
+
+
+def check_amino_acids(df_column: pd.DataFrame) -> pd.DataFrame:
+    """Check amino acids are valid 
+    This function checks if the amino acids in one column of a dataframe are valid amino acids
+
+    Parameters
+    ---------
+    df_column: pd.DataFrame
+        One column of a dataframe 
+
+    Returns
+    --------
+    pd.DataFrame
+        Currated column with invalid aa replaced by "_"
+
+    """
+    aa_set = set([*'ARDNCEQGHILKMFPSTWYV'])
+    print('Checking amino acids...\n')
+    for r in tqdm(range(df_column.shape[0])):
+        wrong_aa = [aa for aa in df_column.iloc[r, 0] if aa not in aa_set]
+        for aa in wrong_aa:
+            df_column.iloc[r, 0] = df_column.iloc[r, 0].replace(aa, "_")
+    return df_column
+
+
+def check_amino_acids_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Check all columns with AA sequences 
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        A pandas dataframe with pairing data 
+
+    Returns
+    -------
+    pd.DataFrame
+        A pandas dataframe with curated data 
+    """
+
+    print("Checking if provided amino acids are valid\n")
+    df['vaseq'] = check_amino_acids(df["vaseq"].to_frame())
+    df['vbseq'] = check_amino_acids(df["vbseq"].to_frame())
+    df['cdr3a'] = check_amino_acids(df["cdr3a"].to_frame())
+    df['cdr3b'] = check_amino_acids(df["cdr3b"].to_frame())
+    df['peptide'] = check_amino_acids(df["peptide"].to_frame())
+    return df
+
+
+def read_file(file_path: str,
+              background_tcrs_dir: str = "./validation_data/",
+              mhc_path: str = "./validation_data/valid_mhc.txt",
+              save_df: bool=False, 
+              output_file_path: Optional[str]=None,
+              **kwargs) -> pd.DataFrame:
+    """Reads in user dataframe and performs some basic data curation 
+
+    Parameters:
+    -----------
+    file_path: str
+        Path to the dataframe
+    background_tcrs_dir: str
+        The directory with background TCR datasets 
+    mhc_path: str
+        The file path to valid mhcs 
+        
+    Returns
+    -------
+    pd.DataFrame
+        A curated pandas dataframe 
+
+    """
+    print('Attempting to read in the dataframe...\n')
+    df = pd.read_csv(file_path, **kwargs).fillna('')
+    print("Number of rows in raw dataset: " + str(df.shape[0]))
+    # Check column names
+    df = check_column_names(df=df)
+    # Check species
+    df = check_species(df=df)
+    # Check VA VB
+    df, invalid_v_df = check_va_vb(df=df, background_tcrs_dir=background_tcrs_dir)
+    # Check MHC
+    df = infer_mhc_info(df=df)
+    df, df_mhc_alpha_dropped, df_mhc_beta_dropped = check_mhc(df=df, mhc_path=mhc_path)
+    # Check peptide
+    df, df_antigen_dropped = check_peptide(df=df)
+    # Check aa sequences
+    df = check_amino_acids_columns(df=df)
+    
+    if save_df:
+        if output_file_path is None:
+            output_file_path = file_path
+        output_file_name = os.path.splitext(output_file_path)[0]
+        df.to_csv(output_file_name+"_curated.csv", sep=',', index=False)
+        invalid_v_df.to_csv(output_file_name+"_curated_invalid_v.csv", sep=',', index=False)
+        df_mhc_alpha_dropped.to_csv(output_file_name+"_curated_mhc_alpha_dropped.csv", sep=',', index=False)
+        df_mhc_beta_dropped.to_csv(output_file_name+"_curated_mhc_beta_dropped.csv", sep=',', index=False)
+        df_antigen_dropped.to_csv(output_file_name+"_curated_antigen_dropped.csv", sep=',', index=False)
+    return df
 
 
 def encode_mhc_seq(df: pd.DataFrame,
@@ -410,93 +556,4 @@ def encode_mhc_seq(df: pd.DataFrame,
     
     with open(output_path, 'wb') as handle:
         pickle.dump(mhc_seq_dict, handle, protocol=pickle.HIGHEST_PROTOCOL) 
-            
-        
-def check_peptide(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
-
-    # antigen peptide longer than 30 will be dropped
-    df_antigen_dropped = df[df.peptide.str.len() > 30].reset_index(drop=True)
-    df = df[df.peptide.str.len() <= 30].reset_index(drop=True)
-    return df, df_antigen_dropped
-
-
-def check_amino_acids(df_column: pd.DataFrame) -> pd.DataFrame:
-    """Check amino acids are valid 
-    This function checks if the amino acids in one column of a dataframe are valid amino acids
-
-    Parameters
-    ---------
-    df_column: pd.DataFrame
-        One column of a dataframe 
-
-    Returns
-    --------
-    pd.DataFrame
-        Currated column with invalid aa replaced by "_"
-
-    """
-    aa_set = set([*'ARDNCEQGHILKMFPSTWYV'])
-    print('Checking amino acids...\n')
-    for r in tqdm(range(df_column.shape[0])):
-        wrong_aa = [aa for aa in df_column.iloc[r, 0] if aa not in aa_set]
-        for aa in wrong_aa:
-            df_column.iloc[r, 0] = df_column.iloc[r, 0].replace(aa, "_")
-    return df_column
-
-
-def check_amino_acids_columns(df: pd.DataFrame) -> pd.DataFrame:
-
-    print("Checking if provided amino acids are valid\n")
-    df['vaseq'] = check_amino_acids(df["vaseq"].to_frame())
-    df['vbseq'] = check_amino_acids(df["vbseq"].to_frame())
-    df['cdr3a'] = check_amino_acids(df["cdr3a"].to_frame())
-    df['cdr3b'] = check_amino_acids(df["cdr3b"].to_frame())
-    df['peptide'] = check_amino_acids(df["peptide"].to_frame())
-    return df
-
-
-def read_file(file_path: str,
-              background_tcrs_dir: str = "./validation_data/",
-              mhc_path: str = "./validation_data/valid_mhc.txt",
-              output_path: Optional[str]=None,
-              **kwargs) -> pd.DataFrame:
-    """Reads in user dataframe and performs some basic data curation 
-
-    Parameters:
-    -----------
-    file_path: str
-        Path to the dataframe
-    background_tcrs_dir: str
-        The directory with background TCR datasets 
-    mhc_path: str
-        The file path to valid mhcs 
-    output_path: Optional[str]
-        The path to the pickle file 
-    Returns
-    -------
-    pd.DataFrame
-        A curated pandas dataframe 
-
-    """
-    print('Attempting to read in the dataframe...\n')
-    df = pd.read_csv(file_path, **kwargs).fillna('')
-    print("Number of rows in raw dataset: " + str(df.shape[0]))
-    # Check column names
-    df = check_column_names(df=df)
-    # Check species
-    df = check_species(df=df)
-    # Check VA VB
-    df, _ = check_va_vb(df=df, background_tcrs_dir=background_tcrs_dir)
-    # Check MHC
-    df = infer_mhc_info(df=df)
-    df, _, _ = check_mhc(df=df, mhc_path=mhc_path)
-    # Check peptide
-    df, _ = check_peptide(df=df)
-    # Check aa sequences
-    df = check_amino_acids_columns(df=df)
-    
-    if output_path is None:
-        file_name = os.path.splitext(file_path)[0]
-        output_path = file_name+"_mhc_seq_dict.pickle"
-    encode_mhc_seq(df=df, output_path=output_path)
-    return df
+      

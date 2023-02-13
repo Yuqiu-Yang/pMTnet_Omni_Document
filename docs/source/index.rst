@@ -30,7 +30,7 @@ your own dataset and we will crunch the numbers for you.
 In this document, we will mainly focus on two aspects:
 
 Input Format
-   A series of detailed explanations will be provided to help you organize your dataset so that 
+   A series of detailed explanations as well as functions will be provided to help you organize your dataset so that 
    the input can be correctly recognized by **pMTnet Omni**.
 
 Input Parameters 
@@ -41,6 +41,13 @@ Input Parameters
 User Guide / Tutorial
 =====================
 .. toctree::
+   :maxdepth: 1
+   :caption: Get Started
+
+   installation_guide
+   quick_start
+   
+.. toctree::
    :maxdepth: 3
    :caption: Input Format
 
@@ -48,8 +55,9 @@ User Guide / Tutorial
 
 .. toctree::
    :maxdepth: 1
-   :caption: Input Parameters 
+   :caption: Detailed Tutorials
 
+   tutorial/data_curation
    tutorial/details
 
 .. toctree::

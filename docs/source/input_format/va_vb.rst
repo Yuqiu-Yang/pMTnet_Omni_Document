@@ -7,7 +7,7 @@ subsequent algorithm, we expect that it would be more
 convenient for the users to supply the names. 
 
 In this section, we provide some general guidelines 
-on the nomenclatures used in **pMTnet Omni**. Before 
+on the nomenclatures used. Before 
 you get started: 
 
 .. warning:: 
@@ -92,5 +92,5 @@ using the main algorithm.
   If you are still not sure whether or not the information 
   you supplied conforms with our standard, we also 
   provided some rudimentary functionalities to help you.
-  Please refer to :doc:`/tutorial/input_check` where we guide 
+  Please refer to :doc:`/tutorial/data_curation` where we guide 
   you through the process. 

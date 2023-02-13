@@ -1,0 +1,82 @@
+Quick Start Guide
+==================
+So I hear your week has been hectic. 
+No worries. In this tutorial, we will walk through the basic usage of 
+**pMTnet Omni Document** with minimum configuration. 
+If you are truly swamped, we recommend `our online tool <http://lce-test.biohpc.swmed.edu/pmtnet>`_.
+
+.. note:: 
+    Before proceeding, make sure you have all the dependencies and the package 
+    installed in your environment. 
+
+    If not, please check out :doc:`installation_guide`. 
+
+    We will assume that you already have the environment set up. 
+
+.. note::
+    We will use the validation data we published along with the package, whose location we 
+    assume is at ``./validation_data``. 
+    
+    Make sure your data file which we assume is located at 
+    ``./df.csv`` is structured somewhat like the following:
+
+    .. image:: ./images/sample_df.png
+        :width: 600
+        :align: center
+
+    For a more detailed instruction on the data format, please check out :doc:`input_format/index`. 
+
+
+CLI (Command Line Interface)
+--------------------------------
+By using CLI, you only need one line of code. 
+
+.. code:: bash 
+
+    python -m pMTnet_Omni_Document --file_path ./df.csv --validation_data_path ./validation_data --output_file_path ./df_curated.csv
+
+
+Interactive Python 
+-------------------
+Read the file 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. code-block:: python 
+
+    # Import necessary functions
+    from pMTnet_Omni_Document.data_curation import read_file, encode_mhc_seq 
+
+    # Read the file 
+    df = read_file(file_path="./df.csv",
+                  background_tcrs_dir='./validation_data/',
+                  mhc_path="./validation_data/valid_mhc.txt",
+                  sep=",")
+    df.to_csv('./df_curated.csv', sep=',', index=False)
+
+``./df_curated.csv`` will contain all the curated data. You will 
+also see some extra columns in this file. 
+
+.. note:: 
+    If you see that ``mhca_use_seq`` and/or ``mhcb_user_seq`` columns 
+    have ``True``, then you need to proceed to the next step. 
+
+Encode new MHCs 
+~~~~~~~~~~~~~~~~~~~~~~~
+.. code-block:: python 
+    
+    # Encode MHC sequences 
+    encode_mhc_seq(df=df,
+                   output_path='./df_curated_mhc_seq_dict.pickle')
+
+``./df_curated_mhc_seq_dict.pickle`` is a *pickle* file of a dictionary.
+The keys are various MHC sequences and the values are their corresponding 
+ESM embeddings.
+
+
+
+
+
+
+
+
+
+

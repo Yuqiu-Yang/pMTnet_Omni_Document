@@ -1,17 +1,17 @@
 Input File Format
 =======================
 Our algorithm is really powerful. However, it still has not possessed human intelligence yet.
-This unfortunately means that the input files need to conform with some certain format.
+This unfortunately means that the input files need to conform with some certain format. 
+
+In this section, we will take a deep dive into the ``read_file`` function 
+provided in the **data_curation** module of **pMTnet_Omni_Document** package.
 
 File Format 
 ---------------
-Although the default format that **pMTnet Omni** expects is `.csv`, since 
+Although the default format that ``read_file`` expects is `.csv`, since 
 under the hood, we use the `read_csv` function from 
-the `pandas` package, **pMTnet Omni** accepts inputs of major file formats, as 
+the `pandas` package, ``read_file`` accepts inputs of major file formats, as 
 long as the corresponding `sep` argument is supplied. 
-
-.. note:: 
-    By default, **pMTnet Omni** assumes that the first row is the header.
 
 .. list-table:: Acceptable File Format 
     :widths: 50 50
@@ -29,10 +29,10 @@ long as the corresponding `sep` argument is supplied.
 
 Column Names
 ---------------
-As subsequent functions of **pMTnet Omni** manipulates
+As methods of **pMTnet Omni** manipulates
 the input dataframe based on its column names, harmonizing 
 column names is necessary. Therefore, when reading the user input,
-**pMTnet Omni** will first attempt to find the following column names.
+``read_file`` will first attempt to find the following column names.
 
 .. note:: 
     Details on the data format will be explained in :ref:`Data Format` section. 
@@ -76,12 +76,12 @@ column names is necessary. Therefore, when reading the user input,
       - 
     * - mhc
       - The name(s) of the MHC
-      - Yes 
-      - 
+      - No 
+      - At least one of ``mhc`` and ``mhcseq`` needs to be supplied 
     * - mhcseq
       - The sequence(s) of amino acids of the corresponding ``mhc`` 
       - No
-      - If the ``mhc`` supplied can not be found in the ESM library, then this has to be supplied 
+      - At least one of ``mhc`` and ``mhcseq`` needs to be supplied 
     * - tcr_species
       - Species of the TCR
       - Yes 
@@ -91,7 +91,7 @@ column names is necessary. Therefore, when reading the user input,
       - Yes 
       - ``human`` or ``mouse``
 
-If **pMTnet Omni** can not match these names exactly, it will try
+If ``read_file`` can not match these names exactly, it will try
 modifying the found column names in the user input to match the names. 
 Specifically, it will change the names to lower cases, strip all white spaces, 
 and remove special characters like ``*, _, +, -``. See the following for some 

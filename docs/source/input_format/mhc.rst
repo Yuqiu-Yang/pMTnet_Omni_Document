@@ -82,10 +82,8 @@ Or the program will halt and throw an error if the sequences are not provided.
         ``mouse_microglobulin``.
 
     Mouse Class II 
-        One name for the MHC would suffice. Our program will use the 
-        input value appended with ``_alpha`` as the name for the 
-        Alpha chain and the input value appended with ``_beta`` 
-        as the name for the Beta chain 
+        One name for the MHC would suffice. Our program will automatically 
+        extract the alpha and beta chain sequences from our database.
 
 .. list-table:: Sample Input 
    :align: center 
@@ -113,7 +111,7 @@ Or the program will halt and throw an error if the sequences are not provided.
   If you are still not sure whether or not the information 
   you supplied conforms with our standard, we also 
   provided some rudimentary functionalities to help you.
-  Please refer to :doc:`/tutorial/input_check` where we guide 
+  Please refer to :doc:`/tutorial/data_curation` where we guide 
   you through the process.  
 
 

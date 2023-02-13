@@ -12,6 +12,7 @@ Here you will find all the details to data curation functions.
 .. autofunction:: check_amino_acids
 .. autofunction:: check_amino_acids_columns
 .. autofunction:: read_file
+.. autofunction:: encode_mhc_seq
 
 
 

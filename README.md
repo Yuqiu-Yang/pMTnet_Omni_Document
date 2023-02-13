@@ -5,8 +5,10 @@
 ![forthebadge](/assets/tcr-pmhc.svg)
 ![forthebadge](/assets/deep-learning.svg)
 
-[![Documentation Status](https://readthedocs.org/projects/pmtnet-omni-document/badge/?version=latest)](https://pmtnet-omni-document.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/Yuqiu-Yang/pMTnet_Omni/branch/main/graph/badge.svg?token=L59TPMM3VN)](https://codecov.io/gh/Yuqiu-Yang/pMTnet_Omni)
+| Package | Documentation | Code Coverage |
+| --- | --- | --- |
+| pMTnet Omni | | [![codecov](https://codecov.io/gh/Yuqiu-Yang/pMTnet_Omni/branch/main/graph/badge.svg?token=L59TPMM3VN)](https://codecov.io/gh/Yuqiu-Yang/pMTnet_Omni) |
+| pMTnet Omni Document | [![Documentation Status](https://readthedocs.org/projects/pmtnet-omni-document/badge/?version=latest)](https://pmtnet-omni-document.readthedocs.io/en/latest/?badge=latest) | [![codecov](https://codecov.io/gh/Yuqiu-Yang/pMTnet_Omni_Document/branch/main/graph/badge.svg?token=BR1vyICN3q)](https://codecov.io/gh/Yuqiu-Yang/pMTnet_Omni_Document) |
 
 <b>pMTnet Omni</b> is a deep learning algorithm for affinity prediction based on TCR Va, Vb, CDR3a, CDR3b sequences, peptide sequence, and MHC allele types. The predictions can be made for human and mouse alleles, and for both CD8 T cells/MHC class I and CD4 T cells/MHC class II.
 
@@ -45,13 +47,24 @@ Along with the main program, we also published 5 datasets under the `./validatio
 to use those datasets to check if you TCR namings, Amino Acid sequences, and MHC namings conform with our 
 standard.
 
-**_NOTE:_** If the corresponding AA sequences are NOT provided AND the TCR names (same for MHC) can NOT be found in these datasets, the record WILL be dropped. 
+**_NOTE:_** When both TCR names (resp. MHC) and the 
+TCR sequences (resp. MHC sequences) are provided, we 
+will *disregard the sequences*. If the names can NOT be 
+found in our reference database, the record WILL be 
+dropped.
 
-2. 
+**_NOTE:_** On the other hand, if the names are NOT provided, we will use the sequences with minimal curation. 
 
-2. Go to [our website](http://lce-test.biohpc.swmed.edu/pmtnet) and upload your data
+2. Say your dataset is under <i>./df.csv</i>. In your terminal, run 
+```shell
+conda activate pMTnet_Omni_Document
 
-3. An example output would look like this:
+python -m pMTnet_Omni_Document --file_path ./df.csv --validation_data_path ./validation_data --output_file_path ./df_result.csv
+```
+
+3. Go to [our website](http://lce-test.biohpc.swmed.edu/pmtnet) and upload your data including the `.pickle` file. 
+
+4. An example output would look like this:
 ![Sample output](/docs/source/images/sample_output.png)
 
 For a more in-depth explanation on input format, check out our [online documentation](https://pmtnet-omni-document.readthedocs.io/en/latest/). 
