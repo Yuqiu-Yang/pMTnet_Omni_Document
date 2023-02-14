@@ -37,6 +37,27 @@ Input Parameters
    **pMTnet Omni** can be configured in a various ways to suit your own need. We will walk through 
    the parameters you can use to alter the behaviors of our algorithm.
 
+Dependencies
+--------------
+
+* python>=3.9
+* numpy==1.22.4
+* pandas==1.5.2
+* tqdm==4.64.1
+* torch==1.13.1
+* fair-esm==2.0.0
+
+Quick (but sloppy) Installation
+--------------------------------
+
+.. note:: 
+   This will install *pMTnet_Omni_Document* to your `base` environment. 
+   For a more in-depth instruction, check out our :doc:`installation_guide`. 
+
+.. code:: bash
+   
+   pip install pMTnet_Omni_Document
+
 
 User Guide / Tutorial
 =====================
