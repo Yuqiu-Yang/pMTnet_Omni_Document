@@ -171,7 +171,7 @@ We also provide other supporting files for your to download.
 Parameter Summary
 -----------------------
 
-.. list-table:: Affinity Prediction Parameters 
+.. list-table:: Parameter Summary
     :align: center
     :widths: 10 10 20 10 50 
     :header-rows: 1
