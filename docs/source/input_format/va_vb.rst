@@ -13,7 +13,7 @@ you get started:
 .. warning:: 
     Make sure that the information provided in the ``tcr_species`` column
     is compatible with the corresponding information in the 
-    ``va`` and ``vb`` column. 
+    ``va`` and ``vb`` columns. 
 
 IMGT Nomenclature
 -------------------------
@@ -25,13 +25,21 @@ to use the nomenclature adopted by
 
 .. _IMGT: https://www.imgt.org/
 
-.. warning:: 
+.. note:: 
     Make sure that your nomenclature conforms with 
     the IMGT nomenclature. For correspondence among 
     different nomenclatures, you can refer to 
     `this website`_.
 
 .. _this website: https://www.imgt.org/IMGTrepertoire/LocusGenes/#J
+
+.. warning:: 
+  Information provided in ``va`` and ``vb`` columns should be 
+
+  **v gene name + allele name**
+
+  If only gene names are available in your data, we recommend substituting 
+  with the corresponding reference alleles. 
 
 That being said, we still feel it could be helpful 
 to provide a checklist to overcome some 
@@ -69,12 +77,15 @@ common "issues" we encountered:
 
 |uncheck| Change names like ``TRAV01-01`` to ``TRAV1-1``
 
-|uncheck| If there is not allele, still append ``*01`` to the string
+|uncheck| Make sure both gene names and allele names are provided
+
+|uncheck| If there are only gene names, use their reference alleles e.g. appending ``*01`` to the string
 
 Although we perform basic data curation while reading the user input, 
 it's nearly impossible for us to cover all corner cases. Therefore, we 
 strongly recommend you to check your input format before preceding to 
 using the main algorithm.
+  
 
 .. list-table:: Sample Input 
    :align: center 
