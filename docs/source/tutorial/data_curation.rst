@@ -90,18 +90,18 @@ in our reference data.
 In this case, we will invoke the ESM2 algorithm to encode these 
 sequences, produce a dictionary whose keys are the sequences 
 and values are the embeddings, and save the dictionary 
-as a ``.pickle`` file. 
+as a ``.json`` file. 
 
 To encode the MHC sequences, simply call 
 
 .. code-block:: python 
 
     encode_mhc_seq(df=df, 
-                   output_path='output/path.pickle')
+                   output_path='output/path.json')
 
 .. warning:: 
     When uploading your dataset or the curated version produced 
     by ``read_file`` function (recommended)
     to `DBAI <http://lce-test.biohpc.swmed.edu/pmtnet>`_,
-    make sure to upload the ``.pickle`` file as well. Otherwise, 
+    make sure to upload the ``.json`` file as well. Otherwise, 
     these records will be dropped. 
