@@ -1,9 +1,11 @@
 import pytest
+import os 
 import pandas as pd
 from copy import deepcopy
 
 from pMTnet_Omni_Document.data_curation import check_column_names,\
     check_species,\
+    check_v_gene_allele,\
     check_va_vb,\
     infer_mhc_info,\
     check_mhc,\
@@ -16,6 +18,22 @@ df_0 = pd.read_csv('./tests/test_data/test_df.csv', sep=',')
 common_column_names = ["va", "cdr3a", "vaseq", "vb", "cdr3b", "vbseq",
                        "peptide", "mhc", "mhcseq",
                        "tcr_species", "pmhc_species"]
+
+background_tcrs_dir="./validation_data"
+human_alpha_tcrs = pd.read_csv(os.path.join(
+    background_tcrs_dir, "human_alpha.txt"), sep="\t", header=0)[["va", "vaseq"]].drop_duplicates()
+human_beta_tcrs = pd.read_csv(os.path.join(
+    background_tcrs_dir, "human_beta.txt"), sep="\t", header=0)[["vb", "vbseq"]].drop_duplicates()
+mouse_alpha_tcrs = pd.read_csv(os.path.join(
+    background_tcrs_dir, "mouse_alpha.txt"), sep="\t", header=0)[["va", "vaseq"]].drop_duplicates()
+mouse_beta_tcrs = pd.read_csv(os.path.join(
+    background_tcrs_dir, "mouse_beta.txt"), sep="\t", header=0)[["vb", "vbseq"]].drop_duplicates()
+# We rename the *seq* columns
+human_alpha_tcrs = human_alpha_tcrs.rename(columns={'vaseq': 'vaseq_ref'})
+human_beta_tcrs = human_beta_tcrs.rename(columns={'vbseq': 'vbseq_ref'})
+mouse_alpha_tcrs = mouse_alpha_tcrs.rename(columns={'vaseq': 'vaseq_ref'})
+mouse_beta_tcrs = mouse_beta_tcrs.rename(columns={'vbseq': 'vbseq_ref'})
+
 ########################
 # Column names
 
@@ -62,6 +80,17 @@ def test_check_species(tcr_species, pmhc_species):
 ########################
 # va vb
 
+@pytest.mark.parametrize("a_reference_df, b_reference_df", [
+    (human_alpha_tcrs, human_beta_tcrs)
+])
+def test_check_v_gene_allele(a_reference_df, b_reference_df):
+    df = deepcopy(df_0)
+    df.at[0, 'va'] = 'TRAV19'
+    try:
+        check_v_gene_allele(df, a_reference_df, b_reference_df)
+        assert True
+    except:
+        assert False 
 
 @pytest.mark.parametrize("df, expected", [
     (df_0, 0)
@@ -162,7 +191,7 @@ def test_read_file():
 
 
 @pytest.mark.parametrize("df, output_path", [
-    (df_0, "./tests/test_data/test_df_mhc_seq_dict.pickle")
+    (df_0, "./tests/test_data/test_df_mhc_seq_dict.json")
 ])
 def test_encode_mhc_seq(df, output_path):
     try:

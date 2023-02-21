@@ -1,7 +1,10 @@
 # Data IO
 import os
+from copy import deepcopy
 import pandas as pd
-import pickle 
+import numpy as np 
+import json 
+from json import JSONEncoder
 
 # PyTorch module 
 import torch 
@@ -133,6 +136,40 @@ def check_species(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def check_v_gene_allele(df: pd.DataFrame,
+                        a_reference_df: pd.DataFrame,
+                        b_reference_df) -> pd.DataFrame:
+    
+    # For each va vb we split the gene and the alelle (split by *)
+    # If gene can not be found in the database, this record should be discarded 
+    # If alelle can not be found 
+    # (this includes situations where the alelle is not provided and 
+    # alelle is provided but can not be found)
+    # we give a warning, and replace with the reference (the smallest number usu. 01)
+    
+    # We first split the reference va/vb via *
+    ref_dfs = {'va': deepcopy(a_reference_df),
+               'vb': deepcopy(b_reference_df)}
+    
+    for column_name in ref_dfs:
+        ref_dfs[column_name][['gene', 'allele']] = ref_dfs[column_name][column_name].str.split("*", expand=True)
+        # We attempt to harmonize the data format 
+        df[column_name] = df[column_name].str.replace(' ', '').str.replace('.', '-').str.replace(':', '*')
+        for i in tqdm(range(df.shape[0])):
+            v = df.at[i, column_name]
+            v_gene_allele = v.split('*')
+            if len(v_gene_allele) == 1:
+                v_gene_allele.append('')
+            if v_gene_allele[0] not in ref_dfs[column_name].gene.values:
+                df.at[i, column_name] = "_"
+            else:
+                possible_alleles = sorted(ref_dfs[column_name]['allele'][ref_dfs[column_name].gene == v_gene_allele[0]].values)
+                if v_gene_allele[1] not in possible_alleles:
+                    v_gene_allele[1] = possible_alleles[0]
+                df.at[i, column_name] = "*".join(v_gene_allele)
+    return df
+
+
 def check_va_vb(df: pd.DataFrame,
                 background_tcrs_dir: str = "./validation_data/") -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Check VA and VB
@@ -174,15 +211,15 @@ def check_va_vb(df: pd.DataFrame,
     # We separate the dataframe based on species
     human_df = df[df['tcr_species'] == "human"].reset_index(drop=True)
     mouse_df = df[df['tcr_species'] == "mouse"].reset_index(drop=True)
+    #################################################
     # Before we start, we curate the data a little
-    human_df['va'] = human_df['va'].str.replace(
-        ' ', '').str.replace('.', '-').str.replace(':', '*')
-    mouse_df['va'] = mouse_df['va'].str.replace(
-        ' ', '').str.replace('.', '-').str.replace(':', '*')
-    human_df['vb'] = human_df['vb'].str.replace(
-        ' ', '').str.replace('.', '-').str.replace(':', '*')
-    mouse_df['vb'] = mouse_df['vb'].str.replace(
-        ' ', '').str.replace('.', '-').str.replace(':', '*')
+    #################################################
+    human_df = check_v_gene_allele(df=human_df, 
+                                   a_reference_df=human_alpha_tcrs,
+                                   b_reference_df=human_beta_tcrs)
+    mouse_df = check_v_gene_allele(df=mouse_df,
+                                   a_reference_df=mouse_alpha_tcrs,
+                                   b_reference_df=mouse_beta_tcrs)
 
     # We will left join the two sets of dataframes on va/vb
     # Then depending on whether or not the seq is '' or not
@@ -195,7 +232,8 @@ def check_va_vb(df: pd.DataFrame,
     for i in tqdm(range(human_df.shape[0])):
         va = human_df.at[i, 'va']
         vb = human_df.at[i, 'vb']
-        # If va/vb can be found we use the reference
+        # If the reference seq of va/vb can be found we use the reference seq
+        # If va/vb can not be found in the database, _ref will be NaN
         # Otherwise, we use the user input
         if va != '':
             human_df.at[i, 'vaseq'] = human_df.at[i, 'vaseq_ref']
@@ -518,6 +556,13 @@ def read_file(file_path: str,
     return df
 
 
+class NumpyArrayEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return JSONEncoder.default(self, obj)
+
+
 def encode_mhc_seq(df: pd.DataFrame,
                    output_path: str) -> None:
     """Encode MHC sequences 
@@ -527,7 +572,7 @@ def encode_mhc_seq(df: pd.DataFrame,
     df : pd.DataFrame
         A pandas dataframe containing pairing data
     output_path : str
-        The path to the pickle file 
+        The path to the json file 
     """
     # Create the ESM2 model 
     # This will download the model if this is the first time 
@@ -554,6 +599,6 @@ def encode_mhc_seq(df: pd.DataFrame,
                     mhcseq_encoding = results["representations"][33].numpy()[0]
                 mhc_seq_dict[mhcseq] = mhcseq_encoding
     
-    with open(output_path, 'wb') as handle:
-        pickle.dump(mhc_seq_dict, handle, protocol=pickle.HIGHEST_PROTOCOL) 
+    with open(output_path, 'w') as handle:
+        json.dump(mhc_seq_dict, handle, cls=NumpyArrayEncoder) 
       
