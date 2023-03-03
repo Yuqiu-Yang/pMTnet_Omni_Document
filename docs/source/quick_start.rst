@@ -33,7 +33,7 @@ By using CLI, you only need one line of code.
 
 .. code:: bash 
 
-    python -m pMTnet_Omni_Document --file_path ./df.csv --validation_data_path ./validation_data --output_file_path ./df_curated.csv
+    python -m pMTnet_Omni_Document --file_path ./df.csv --validation_data_path ./validation_data --output_folder_path ./
 
 
 Interactive Python 
@@ -43,33 +43,27 @@ Read the file
 .. code-block:: python 
 
     # Import necessary functions
-    from pMTnet_Omni_Document.data_curation import read_file, encode_mhc_seq 
+    from pMTnet_Omni_Document.data_curation import read_file 
 
     # Read the file 
-    df = read_file(file_path="./df.csv",
-                  background_tcrs_dir='./validation_data/',
-                  mhc_path="./validation_data/valid_mhc.txt",
-                  sep=",")
-    df.to_csv('./df_curated.csv', sep=',', index=False)
+    df, mhc_seq_dict = read_file(file_path="./df.csv",
+                                background_tcrs_dir='./validation_data/',
+                                mhc_path="./validation_data/valid_mhc.txt",
+                                save_results=True,
+                                sep=",")
 
 ``./df_curated.csv`` will contain all the curated data. You will 
 also see some extra columns in this file. 
 
-.. note:: 
-    If you see that ``mhca_use_seq`` and/or ``mhcb_user_seq`` columns 
-    have ``True``, then you need to proceed to the next step. 
-
-Encode new MHCs 
-~~~~~~~~~~~~~~~~~~~~~~~
-.. code-block:: python 
-    
-    # Encode MHC sequences 
-    encode_mhc_seq(df=df,
-                   output_path='./df_curated_mhc_seq_dict.pickle')
-
-``./df_curated_mhc_seq_dict.pickle`` is a *pickle* file of a dictionary.
+``./mhc_seq_dict.json`` is a *json* file of a dictionary.
 The keys are various MHC sequences and the values are their corresponding 
 ESM embeddings.
+
+.. note:: 
+    If you see that ``mhca_use_seq`` and/or ``mhcb_user_seq`` columns 
+    all have ``False``, then the json file will simply contain an empty 
+    dictionary. 
+
 
 
 
