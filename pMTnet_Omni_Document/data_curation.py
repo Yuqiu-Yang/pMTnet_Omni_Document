@@ -46,13 +46,12 @@ def check_column_names(df: pd.DataFrame) -> pd.DataFrame:
                            "peptide", "mhc", "mhcseq",
                            "tcr_species", "pmhc_species"]
     # Get rid of spaces, convert names to lowercase, remove special characters
-    print("Checking column names...\n")
-    df.columns = df.columns.str.replace(' ', '').str.lower().str.replace(
-        "_", "").str.replace(r'\W', '', regex=True)
+    df.columns = df.columns.str.replace(' ', '', regex=False).str.lower().str.replace(
+        "_", "", regex=False).str.replace(r'\W', '', regex=True)
     df_cols = df.columns.tolist()
     for i in range(len(df_cols)):
         # We get rid of white spaces from each column
-        df[df_cols[i]] = df[df_cols[i]].astype('str').str.replace(' ', '')
+        df[df_cols[i]] = df[df_cols[i]].astype('str').str.replace(' ', '', regex=False)
         df_cols[i] = re.sub(r'(?<=tcr).*(?=species)', "_", df_cols[i])
         df_cols[i] = re.sub(r'(?<=pmhc).*(?=species)', "_", df_cols[i])
     df.columns = df_cols
@@ -123,10 +122,10 @@ def check_species(df: pd.DataFrame) -> pd.DataFrame:
     """
 
     # We first perform some basic data curation to left some burden off the users
-    df["tcr_species"] = df["tcr_species"].str.lower().str.replace(' ', '').str.replace(
-        "_", "").str.replace(r'\W', '', regex=True)
-    df["pmhc_species"] = df["pmhc_species"].str.lower().str.replace(' ', '').str.replace(
-        "_", "").str.replace(r'\W', '', regex=True)
+    df["tcr_species"] = df["tcr_species"].str.lower().str.replace(' ', '', regex=False).str.replace(
+        "_", "", regex=False).str.replace(r'\W', '', regex=True)
+    df["pmhc_species"] = df["pmhc_species"].str.lower().str.replace(' ', '', regex=False).str.replace(
+        "_", "", regex=False).str.replace(r'\W', '', regex=True)
     # Then we make sure that the species are either human or mouse
     if not set(df['tcr_species'].values).issubset(set(['human', 'mouse'])):
         raise Exception("tcr_species have to be human or mouse")
@@ -154,14 +153,22 @@ def check_v_gene_allele(df: pd.DataFrame,
     for column_name in ref_dfs:
         ref_dfs[column_name][['gene', 'allele']] = ref_dfs[column_name][column_name].str.split("*", expand=True)
         # We attempt to harmonize the data format 
-        df[column_name] = df[column_name].str.replace(' ', '').str.replace('.', '-').str.replace(':', '*')
+        df[column_name] = df[column_name].str.replace(' ', '', regex=False).str.replace('.', '-', regex=False).str.replace(':', '*', regex=False)
         for i in tqdm(range(df.shape[0])):
             v = df.at[i, column_name]
             v_gene_allele = v.split('*')
             if len(v_gene_allele) == 1:
                 v_gene_allele.append('')
-            if v_gene_allele[0] not in ref_dfs[column_name].gene.values:
-                df.at[i, column_name] = "_"
+            if v_gene_allele[0] == '':
+                # if v gene is missing
+                # at this point, we assume the seq is provided
+                # Will check later on 
+                continue
+            elif v_gene_allele[0] not in ref_dfs[column_name].gene.values:
+                # if v gene is provided 
+                # but can not be found in the reference 
+                # we append "?" and "!" so that later on it will be dropped 
+                df.at[i, column_name] = "!!!" + "*".join(v_gene_allele) + "???"
             else:
                 possible_alleles = sorted(ref_dfs[column_name]['allele'][ref_dfs[column_name].gene == v_gene_allele[0]].values)
                 if v_gene_allele[1] not in possible_alleles:
@@ -214,9 +221,11 @@ def check_va_vb(df: pd.DataFrame,
     #################################################
     # Before we start, we curate the data a little
     #################################################
+    print("\tCurating human va and vb\n")
     human_df = check_v_gene_allele(df=human_df, 
                                    a_reference_df=human_alpha_tcrs,
                                    b_reference_df=human_beta_tcrs)
+    print("\tCurating mouse va and vb\n")
     mouse_df = check_v_gene_allele(df=mouse_df,
                                    a_reference_df=mouse_alpha_tcrs,
                                    b_reference_df=mouse_beta_tcrs)
@@ -229,12 +238,16 @@ def check_va_vb(df: pd.DataFrame,
     mouse_df = mouse_df.merge(mouse_alpha_tcrs, on="va", how='left')
     mouse_df = mouse_df.merge(mouse_beta_tcrs, on="vb", how='left')
     # .._df now should have columns va vb vaseq vbseq vaseq_ref vbseq_ref along with others
+    print("\tQuerying human reference data\n")
     for i in tqdm(range(human_df.shape[0])):
         va = human_df.at[i, 'va']
         vb = human_df.at[i, 'vb']
         # If the reference seq of va/vb can be found we use the reference seq
-        # If va/vb can not be found in the database, _ref will be NaN
+        # If va/vb can not be found in the database, *_ref will be NaN
+        # If va/vb is missing, we use the user input.
         # Otherwise, we use the user input
+        # Therefore, when users provided the v gene, we will alwyas use 
+        # the query result (which can be NaN). If not, we use the user seq. 
         if va != '':
             human_df.at[i, 'vaseq'] = human_df.at[i, 'vaseq_ref']
         if vb != '':
@@ -245,7 +258,7 @@ def check_va_vb(df: pd.DataFrame,
                                 (human_df['vbseq'] == '')].reset_index(drop=True)
     human_df = human_df[(human_df['vaseq'] != '') &
                         (human_df['vbseq'] != '')].reset_index(drop=True)
-
+    print("\tQuerying mouse reference data\n")
     for i in tqdm(range(mouse_df.shape[0])):
         va = mouse_df.at[i, 'va']
         vb = mouse_df.at[i, 'vb']
@@ -294,9 +307,9 @@ def infer_mhc_info(df: pd.DataFrame) -> pd.DataFrame:
     # We clean up the input a little bit
     # We remove HLA and H2 which will be added backed if necessary
     # so as to make sure the format is coherent
-    df['mhc'] = df['mhc'].str.replace(' ', '').str.replace(
-        '-', '').str.replace('HLA', '').str.replace('H2', '')
-    df['mhcseq'] = df['mhcseq'].str.replace(' ', '').str.upper()
+    df['mhc'] = df['mhc'].str.replace(' ', '', regex=False).str.replace(
+        '-', '', regex=False).str.replace('HLA', '', regex=False).str.replace('H2', '', regex=False)
+    df['mhcseq'] = df['mhcseq'].str.replace(' ', '', regex=False).str.upper()
 
     # Human class I starts with A, B, or C
     human_class_i = ("A", "B", "C")
@@ -307,7 +320,7 @@ def infer_mhc_info(df: pd.DataFrame) -> pd.DataFrame:
     # Class II starts with IA, IE
     mouse_class_ii = tuple(["H-2-" + i for i in ["IA", "IE"]])
 
-    for i in range(df.shape[0]):
+    for i in tqdm(range(df.shape[0])):
         mhc = df.at[i, "mhc"]
         mhcseq = df.at[i, "mhcseq"]
         pmhc_species = df.at[i, "pmhc_species"]
@@ -432,7 +445,6 @@ def check_mhc(df: pd.DataFrame,
     df['mhcb_use_seq'] = ~df['mhcb'].isin(mhc_dic_keys)
 
     df = df.reset_index(drop=True)
-    print("Number of rows in processed dataset: " + str(df.shape[0]))
 
     return df, df_mhc_alpha_dropped, df_mhc_beta_dropped
       
@@ -473,7 +485,6 @@ def check_amino_acids(df_column: pd.DataFrame) -> pd.DataFrame:
 
     """
     aa_set = set([*'ARDNCEQGHILKMFPSTWYV'])
-    print('Checking amino acids...\n')
     for r in tqdm(range(df_column.shape[0])):
         wrong_aa = [aa for aa in df_column.iloc[r, 0] if aa not in aa_set]
         for aa in wrong_aa:
@@ -494,12 +505,15 @@ def check_amino_acids_columns(df: pd.DataFrame) -> pd.DataFrame:
     pd.DataFrame
         A pandas dataframe with curated data 
     """
-
-    print("Checking if provided amino acids are valid\n")
+    print("\tChecking vaseq\n")
     df['vaseq'] = check_amino_acids(df["vaseq"].to_frame())
+    print("\tChecking vbseq\n")
     df['vbseq'] = check_amino_acids(df["vbseq"].to_frame())
+    print("\tChecking cdr3a\n")
     df['cdr3a'] = check_amino_acids(df["cdr3a"].to_frame())
+    print("\tChecking cdr3b\n")
     df['cdr3b'] = check_amino_acids(df["cdr3b"].to_frame())
+    print("\tChecking peptide\n")
     df['peptide'] = check_amino_acids(df["peptide"].to_frame())
     return df
 
@@ -584,19 +598,36 @@ def read_file(file_path: str,
     df = pd.read_csv(file_path, **kwargs).fillna('')
     print("Number of rows in raw dataset: " + str(df.shape[0]))
     # Check column names
+    print("Checking column names\n")
     df = check_column_names(df=df)
     # Check species
+    print("Checking species information\n")
     df = check_species(df=df)
     # Check VA VB
+    print("Check va, vb information\n")
     df, invalid_v_df = check_va_vb(df=df, background_tcrs_dir=background_tcrs_dir)
+    print("Number of rows in processed dataset: " + str(df.shape[0])+"\n")
+    print("Number of rows dropped due to V genes: " + str(invalid_v_df.shape[0])+"\n")
+    print("NOTE that if the name of an V gene is provided but can not be found in the reference data, it will be dropped.\n")
     # Check MHC
+    print("Infering MHC information\n")
     df = infer_mhc_info(df=df)
+    print("Checking MHC information\n")
     df, df_mhc_alpha_dropped, df_mhc_beta_dropped = check_mhc(df=df, mhc_path=mhc_path)
+    print("Number of rows in processed dataset: " + str(df.shape[0])+"\n")
+    print("Number of rows dropped due to missing or incorrect mhc alpha: " + str(df_mhc_alpha_dropped.shape[0])+"\n")
+    print("Number of rows dropped due to missing or incorrect mhc beta: " + str(df_mhc_beta_dropped.shape[0])+"\n")
+    print("NOTE that if the name of an MHC can not be found in the reference data or is not provided and the sequence is not provided, it will be dropped. \n")
     # Check peptide
+    print("Checking peptide information\n")
     df, df_antigen_dropped = check_peptide(df=df)
+    print("Number of rows in processed dataset: " + str(df.shape[0])+"\n")
+    print("Number of rows dropped due to peptide being longer than 30: " + str(df_antigen_dropped.shape[0])+"\n")
     # Check aa sequences
+    print("Checking AA sequences\n")
     df = check_amino_acids_columns(df=df)
     # Encode MHCs if any
+    print("Encoding MHCs\n")
     mhc_seq_dict = encode_mhc_seq(df=df)
     
     if save_results:
