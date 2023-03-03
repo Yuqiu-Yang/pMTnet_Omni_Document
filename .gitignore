@@ -136,4 +136,8 @@ dmypy.json
 # VS code 
 .vscode
 
-test_df_*
+# 
+pMTnet_Omni_Document/tests/test_data/*
+
+!pMTnet_Omni_Document/tests/test_data/test_df.csv
+

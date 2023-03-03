@@ -52,7 +52,7 @@ def check_column_names(df: pd.DataFrame) -> pd.DataFrame:
     df_cols = df.columns.tolist()
     for i in range(len(df_cols)):
         # We get rid of white spaces from each column
-        df[df_cols[i]] = df[df_cols[i]].str.replace(' ', '')
+        df[df_cols[i]] = df[df_cols[i]].astype('str').str.replace(' ', '')
         df_cols[i] = re.sub(r'(?<=tcr).*(?=species)', "_", df_cols[i])
         df_cols[i] = re.sub(r'(?<=pmhc).*(?=species)', "_", df_cols[i])
     df.columns = df_cols
@@ -504,58 +504,6 @@ def check_amino_acids_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def read_file(file_path: str,
-              background_tcrs_dir: str = "./validation_data/",
-              mhc_path: str = "./validation_data/valid_mhc.txt",
-              save_df: bool=False, 
-              output_file_path: Optional[str]=None,
-              **kwargs) -> pd.DataFrame:
-    """Reads in user dataframe and performs some basic data curation 
-
-    Parameters:
-    -----------
-    file_path: str
-        Path to the dataframe
-    background_tcrs_dir: str
-        The directory with background TCR datasets 
-    mhc_path: str
-        The file path to valid mhcs 
-        
-    Returns
-    -------
-    pd.DataFrame
-        A curated pandas dataframe 
-
-    """
-    print('Attempting to read in the dataframe...\n')
-    df = pd.read_csv(file_path, **kwargs).fillna('')
-    print("Number of rows in raw dataset: " + str(df.shape[0]))
-    # Check column names
-    df = check_column_names(df=df)
-    # Check species
-    df = check_species(df=df)
-    # Check VA VB
-    df, invalid_v_df = check_va_vb(df=df, background_tcrs_dir=background_tcrs_dir)
-    # Check MHC
-    df = infer_mhc_info(df=df)
-    df, df_mhc_alpha_dropped, df_mhc_beta_dropped = check_mhc(df=df, mhc_path=mhc_path)
-    # Check peptide
-    df, df_antigen_dropped = check_peptide(df=df)
-    # Check aa sequences
-    df = check_amino_acids_columns(df=df)
-    
-    if save_df:
-        if output_file_path is None:
-            output_file_path = file_path
-        output_file_name = os.path.splitext(output_file_path)[0]
-        df.to_csv(output_file_name+"_curated.csv", sep=',', index=False)
-        invalid_v_df.to_csv(output_file_name+"_curated_invalid_v.csv", sep=',', index=False)
-        df_mhc_alpha_dropped.to_csv(output_file_name+"_curated_mhc_alpha_dropped.csv", sep=',', index=False)
-        df_mhc_beta_dropped.to_csv(output_file_name+"_curated_mhc_beta_dropped.csv", sep=',', index=False)
-        df_antigen_dropped.to_csv(output_file_name+"_curated_antigen_dropped.csv", sep=',', index=False)
-    return df
-
-
 class NumpyArrayEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
@@ -563,16 +511,19 @@ class NumpyArrayEncoder(JSONEncoder):
         return JSONEncoder.default(self, obj)
 
 
-def encode_mhc_seq(df: pd.DataFrame,
-                   output_path: str) -> None:
+def encode_mhc_seq(df: pd.DataFrame) -> dict:
     """Encode MHC sequences 
 
     Parameters
     ----------
     df : pd.DataFrame
         A pandas dataframe containing pairing data
-    output_path : str
-        The path to the json file 
+        
+    Returns
+    -----------
+    dict
+        A dictionary of the mhc sequences and their the EMS embeddings
+    
     """
     # Create the ESM2 model 
     # This will download the model if this is the first time 
@@ -599,6 +550,66 @@ def encode_mhc_seq(df: pd.DataFrame,
                     mhcseq_encoding = results["representations"][33].numpy()[0]
                 mhc_seq_dict[mhcseq] = mhcseq_encoding
     
-    with open(output_path, 'w') as handle:
-        json.dump(mhc_seq_dict, handle, cls=NumpyArrayEncoder) 
-      
+    return mhc_seq_dict
+
+
+def read_file(file_path: str,
+              background_tcrs_dir: str = "./validation_data/",
+              mhc_path: str = "./validation_data/valid_mhc.txt",
+              save_results: bool=False, 
+              output_folder_path: Optional[str]=None,
+              **kwargs) -> Tuple[pd.DataFrame, dict]:
+    """Reads in user dataframe and performs some basic data curation 
+
+    Parameters:
+    -----------
+    file_path: str
+        Path to the dataframe
+    background_tcrs_dir: str
+        The directory with background TCR datasets 
+    mhc_path: str
+        The file path to valid mhcs 
+    save_results: bool
+        Whether or not the save the result 
+    output_folder_path: str
+        The path to the output folder 
+        
+    Returns
+    -------
+    pd.DataFrame
+        A curated pandas dataframe 
+
+    """
+    print('Attempting to read in the dataframe...\n')
+    df = pd.read_csv(file_path, **kwargs).fillna('')
+    print("Number of rows in raw dataset: " + str(df.shape[0]))
+    # Check column names
+    df = check_column_names(df=df)
+    # Check species
+    df = check_species(df=df)
+    # Check VA VB
+    df, invalid_v_df = check_va_vb(df=df, background_tcrs_dir=background_tcrs_dir)
+    # Check MHC
+    df = infer_mhc_info(df=df)
+    df, df_mhc_alpha_dropped, df_mhc_beta_dropped = check_mhc(df=df, mhc_path=mhc_path)
+    # Check peptide
+    df, df_antigen_dropped = check_peptide(df=df)
+    # Check aa sequences
+    df = check_amino_acids_columns(df=df)
+    # Encode MHCs if any
+    mhc_seq_dict = encode_mhc_seq(df=df)
+    
+    if save_results:
+        if output_folder_path is None:
+            output_folder_path = os.path.dirname(file_path)
+        df.to_csv(os.path.join(output_folder_path, "df_curated.csv"), sep=',', index=False)
+        invalid_v_df.to_csv(os.path.join(output_folder_path, "df_curated_invalid_v.csv"), sep=',', index=False)
+        df_mhc_alpha_dropped.to_csv(os.path.join(output_folder_path, "df_curated_mhc_alpha_dropped.csv"), sep=',', index=False)
+        df_mhc_beta_dropped.to_csv(os.path.join(output_folder_path, "df_curated_mhc_beta_dropped.csv"), sep=',', index=False)
+        df_antigen_dropped.to_csv(os.path.join(output_folder_path, "df_curated_antigen_dropped.csv"), sep=',', index=False)
+        with open(os.path.join(output_folder_path, "mhc_seq_dict.json"), 'w') as handle:
+            json.dump(mhc_seq_dict, handle, cls=NumpyArrayEncoder) 
+        
+    return df, mhc_seq_dict
+
+

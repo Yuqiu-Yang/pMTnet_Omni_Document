@@ -169,38 +169,41 @@ def test_check_amino_acids_columns(df):
 
 
 ########################
-# read_file
-@pytest.mark.parametrize("", [
-    ()
-])
-def test_read_file():
-    try:
-        df = read_file(file_path='./tests/test_data/test_df.csv',
-                       background_tcrs_dir="./validation_data/",
-                       mhc_path="./validation_data/valid_mhc.txt",
-                       save_df=True,
-                       output_file_path=None,
-                       sep=",",
-                       header=0)
-        assert True
-    except:
-        assert False
-
-########################
 # encode mhc sequences 
 
 
-@pytest.mark.parametrize("df, output_path", [
-    (df_0, "./tests/test_data/test_df_mhc_seq_dict.json")
+@pytest.mark.parametrize("df", [
+    (df_0)
 ])
-def test_encode_mhc_seq(df, output_path):
+def test_encode_mhc_seq(df):
     try:
         df = check_column_names(df)
         df = infer_mhc_info(df)
         df, _, _ = check_mhc(df, mhc_path="./validation_data/valid_mhc.txt")
         df['mhcaseq'] = ['AA' for i in range(4)]
         df['mhca_use_seq'] = [True for i in range(4)]
-        encode_mhc_seq(df=df, output_path=output_path)
+        encode_mhc_seq(df=df)
         assert True
     except:
         assert False
+        
+
+########################
+# read_file
+@pytest.mark.parametrize("", [
+    ()
+])
+def test_read_file():
+    try:
+        df, mhc_seq_dict = read_file(file_path='./tests/test_data/test_df.csv',
+                       background_tcrs_dir="./validation_data/",
+                       mhc_path="./validation_data/valid_mhc.txt",
+                       save_results=True,
+                       output_folder_path=None,
+                       sep=",",
+                       header=0)
+        assert True
+    except:
+        assert False
+
+
