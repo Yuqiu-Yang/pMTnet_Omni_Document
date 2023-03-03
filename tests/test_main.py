@@ -59,14 +59,14 @@ def test_parser_help(cmdarg):
         assert False
 
 
-@pytest.mark.parametrize("file_path, validation_data_path, output_file_path", [
-    ('./tests/test_data/test_df.csv', './validation_data', "./tests/test_data/test_df_curated.csv"),
+@pytest.mark.parametrize("file_path, validation_data_path, output_folder_path", [
+    ('./tests/test_data/test_df.csv', './validation_data', "./tests/test_data/"),
 ])
-def test_pmtnet_omni_document_main(mocker, file_path, validation_data_path, output_file_path):
+def test_pmtnet_omni_document_main(mocker, file_path, validation_data_path, output_folder_path):
     cmdargs: mocker.MagicMock = mocker.MagicMock() 
     cmdargs.file_path = file_path
     cmdargs.validation_data_path = validation_data_path
-    cmdargs.output_file_path = output_file_path
+    cmdargs.output_folder_path = output_folder_path
 
     try:
         __main__.main(cmdargs=cmdargs)
@@ -76,15 +76,15 @@ def test_pmtnet_omni_document_main(mocker, file_path, validation_data_path, outp
         assert False 
 
 
-@pytest.mark.parametrize("file_path, validation_data_path, output_file_path", [
-    ('./tests/test_data/test_df.pdf', './validation_data', "./tests/test_data/test_df_curated.csv"),
-    ('./tests/test_data/test_df.csv', './validation_data', "./tests/test_data/test_df_curated.txt"),
+@pytest.mark.parametrize("file_path, validation_data_path, output_folder_path", [
+    ('./tests/test_data/test_df.pdf', './validation_data', "./tests/test_data/"),
+    ('./tests/test_data/test_df.rds', './validation_data', "./tests/test_data/"),
 ])
-def test_pmtnet_omni_main_document_error(mocker, file_path, validation_data_path, output_file_path):
+def test_pmtnet_omni_main_document_error(mocker, file_path, validation_data_path, output_folder_path):
     cmdargs: mocker.MagicMock = mocker.MagicMock() 
     cmdargs.file_path = file_path
     cmdargs.validation_data_path = validation_data_path
-    cmdargs.output_file_path = output_file_path
+    cmdargs.output_folder_path = output_folder_path
 
     try:
         __main__.main(cmdargs=cmdargs)

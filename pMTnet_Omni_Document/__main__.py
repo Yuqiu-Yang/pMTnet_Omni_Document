@@ -29,17 +29,9 @@ The CLI of pMTnet Omni can be accessed via ``python -m pMTnet_Omni_Document``.
 import os
 import sys
 import argparse
-import pandas as pd
 
 from pMTnet_Omni_Document import __version__, __author__
-from pMTnet_Omni_Document.data_curation import check_column_names,\
-    check_species,\
-    check_va_vb,\
-    infer_mhc_info,\
-    check_mhc,\
-    encode_mhc_seq,\
-    check_peptide,\
-    check_amino_acids_columns
+from pMTnet_Omni_Document.data_curation import read_file
 
 
 parser = argparse.ArgumentParser(description="pMTnet Omni")
@@ -55,7 +47,7 @@ parser.add_argument("--validation_data_path",
                     help="The path to the validation data files")
 
 # User output
-parser.add_argument("--output_file_path",
+parser.add_argument("--output_folder_path",
                     help="The file path to the output file")
 
 # Maybe consider
@@ -84,35 +76,12 @@ def main(cmdargs: argparse.Namespace):
     background_tcrs_dir = cmdargs.validation_data_path
     mhc_path = os.path.join(cmdargs.validation_data_path, "valid_mhc.txt")
 
-    output_file_name = os.path.splitext(cmdargs.output_file_path)[0]
-    if os.path.splitext(cmdargs.output_file_path)[1] != ".csv":
-        raise Exception(
-            "Currently, only .csv files can be used as output files")
-
-    # Read user data file
-    df = pd.read_csv(file_path, sep=sep).fillna('')
-    print("Number of rows in raw dataset: " + str(df.shape[0]))
-    # Check column names
-    df = check_column_names(df=df)
-    # Check species
-    df = check_species(df=df)
-    # Check VA VB
-    df, invalid_v_df = check_va_vb(df=df, background_tcrs_dir=background_tcrs_dir)
-    # Check MHC
-    df = infer_mhc_info(df=df)
-    df, df_mhc_alpha_dropped, df_mhc_beta_dropped = check_mhc(df=df, mhc_path=mhc_path)
-    # Check peptide
-    df, df_antigen_dropped = check_peptide(df=df)
-    # Check aa sequences
-    df = check_amino_acids_columns(df=df)
-    
-    output_path = output_file_name+"_mhc_seq_dict.pickle"
-    encode_mhc_seq(df=df, output_path=output_path)
-    df.to_csv(cmdargs.output_file_path, sep=',', index=False)
-    invalid_v_df.to_csv(output_file_name+"_invalid_v.csv", sep=',', index=False)
-    df_mhc_alpha_dropped.to_csv(output_file_name+"_mhc_alpha_dropped.csv", sep=',', index=False)
-    df_mhc_beta_dropped.to_csv(output_file_name+"_mhc_beta_dropped.csv", sep=',', index=False)
-    df_antigen_dropped.to_csv(output_file_name+"_antigen_dropped.csv", sep=',', index=False)
+    _, _ = read_file(file_path=file_path, 
+                    background_tcrs_dir=background_tcrs_dir,
+                    mhc_path=mhc_path,
+                    save_results=True,
+                    output_folder_path=cmdargs.output_folder_path,
+                    sep=sep)
     
     sys.exit(0)
 
