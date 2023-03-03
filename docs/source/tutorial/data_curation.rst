@@ -12,10 +12,9 @@ provide an in-depth exploration of how the package works.
 
     .. code-block:: python
         
-        from pMTnet_Omni_Document.data_curation import read_file, encode_mhc_seq
+        from pMTnet_Omni_Document.data_curation import read_file
 
-Read the File 
---------------------
+
 To perform data curation, the ``read_file`` function carries out 
 the following steps sequentially: 
 
@@ -64,6 +63,13 @@ Check peptide
 Check columns with amino acids
     Unknown AAs will be replaced with ``_``
 
+Encode MHC sequences 
+    When the ``df`` contains some MHCs that are NOT in our reference data or 
+    are missing, we will inzoke the ESM2 algorithm to encode these 
+    sequences, produce a dictionary whose keys are the sequences 
+    and values are the embeddings, and save the dictionary 
+    as a ``.json`` file. 
+
 To perform data curation, simply call 
 
 .. code-block:: python 
@@ -72,32 +78,13 @@ To perform data curation, simply call
                   background_tcrs_dir="./validation_data/",
                   mhc_path="./validation_data/valid_mhc.txt",
                   save_df=True,
-                  output_file_path='output/file/path/here.csv',
+                  output_folder_path='output/folder/path/',
                   sep=',')
 
 You can inspect the values in ``df`` as well as all the 
 ``.csv`` files save to the path you specified with a few
 modifications on the file names. 
 
-Encode MHC sequences 
---------------------------
-When you inspect the ``df``, if you see that some values 
-in ``mhca_use_seq`` and/or ``mhcb_use_seq`` are ``True``, 
-this means that for those records, we will use the sequences 
-as either the MHCs are missing or we can not find their records
-in our reference data. 
-
-In this case, we will invoke the ESM2 algorithm to encode these 
-sequences, produce a dictionary whose keys are the sequences 
-and values are the embeddings, and save the dictionary 
-as a ``.json`` file. 
-
-To encode the MHC sequences, simply call 
-
-.. code-block:: python 
-
-    encode_mhc_seq(df=df, 
-                   output_path='output/path.json')
 
 .. warning:: 
     When uploading your dataset or the curated version produced 
@@ -105,3 +92,8 @@ To encode the MHC sequences, simply call
     to `DBAI <http://lce-test.biohpc.swmed.edu/pmtnet>`_,
     make sure to upload the ``.json`` file as well. Otherwise, 
     these records will be dropped. 
+
+.. warning:: 
+    The current version of **pMTnet_Omni** will **NOT** perform 
+    data curation. It will read in the data as is. If the data 
+    do not conform with its required format, the program WILL halt. 

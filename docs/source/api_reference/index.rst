@@ -12,8 +12,13 @@ Here you will find all the details to data curation functions.
 .. autofunction:: check_peptide
 .. autofunction:: check_amino_acids
 .. autofunction:: check_amino_acids_columns
-.. autofunction:: read_file
+.. autoclass:: NumpyArrayEncoder
+    :members:
+    :undoc-members:
+    :show-inheritance:
 .. autofunction:: encode_mhc_seq
+.. autofunction:: read_file
+
 
 
 

@@ -26,7 +26,7 @@ There are only two parameters needed to accomlish this.
       - ``str``
       - "cpu", "gpu", None
       - None
-      - If ``None``, choose based on gpu availability
+      - If ``None``, choose based on gpu availability. If ``cpu``, the results might be different from ours. 
     * - seed 
       - ``int``
       - Any integer, None
@@ -185,7 +185,7 @@ Parameter Summary
       - ``str``
       - "cpu", "gpu", None
       - None
-      - If ``None``, choose based on gpu availability
+      - If ``None``, choose based on gpu availability. If ``cpu``, the results might be different from ours. 
     * - seed 
       - ``int``
       - Any integer, None
