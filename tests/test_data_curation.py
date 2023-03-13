@@ -196,12 +196,21 @@ def test_encode_mhc_seq(df):
 def test_read_file():
     try:
         df, mhc_seq_dict = read_file(file_path='./tests/test_data/test_df.csv',
-                       background_tcrs_dir="./validation_data/",
-                       mhc_path="./validation_data/valid_mhc.txt",
+                    #    background_tcrs_dir="./validation_data/",
+                    #    mhc_path="./validation_data/valid_mhc.txt",
                        save_results=True,
                        output_folder_path=None,
                        sep=",",
                        header=0)
+        try:
+            os.remove("./tests/test_data/df_curated.csv")
+            os.remove("./tests/test_data/df_curated_antigen_dropped.csv")
+            os.remove("./tests/test_data/df_curated_invalid_v.csv")
+            os.remove("./tests/test_data/df_curated_mhc_alpha_dropped.csv")
+            os.remove("./tests/test_data/df_curated_mhc_beta_dropped.csv")
+            os.remove("./tests/test_data/mhc_seq_dict.json")
+        except:
+            pass 
         assert True
     except:
         assert False

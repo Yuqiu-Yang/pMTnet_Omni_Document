@@ -19,6 +19,9 @@ from tqdm import tqdm
 # Typing
 from typing import Tuple, Optional
 
+# Global variable 
+from pMTnet_Omni_Document import validation_data_path
+
 
 def check_column_names(df: pd.DataFrame) -> pd.DataFrame:
     """Check if the column names are correct 
@@ -568,8 +571,8 @@ def encode_mhc_seq(df: pd.DataFrame) -> dict:
 
 
 def read_file(file_path: str,
-              background_tcrs_dir: str = "./validation_data/",
-              mhc_path: str = "./validation_data/valid_mhc.txt",
+            #   background_tcrs_dir: Optional[str] = "./validation_data/",
+            #   mhc_path: Optional[str] = "./validation_data/valid_mhc.txt",
               save_results: bool=False, 
               output_folder_path: Optional[str]=None,
               **kwargs) -> Tuple[pd.DataFrame, dict]:
@@ -594,6 +597,10 @@ def read_file(file_path: str,
         A curated pandas dataframe 
 
     """
+    # Set validation data paths 
+    background_tcrs_dir = validation_data_path
+    mhc_path = os.path.join(validation_data_path, "valid_mhc.txt")
+    # Read data 
     print('Attempting to read in the dataframe...\n')
     df = pd.read_csv(file_path, **kwargs).fillna('')
     print("Number of rows in raw dataset: " + str(df.shape[0]))

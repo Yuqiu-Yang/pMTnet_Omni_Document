@@ -5,7 +5,7 @@ import shutil
 import distutils.cmd
 
 
-VERSION = "0.0.3"
+VERSION = "0.0.4"
 
 class PypiCommand(distutils.cmd.Command):
     
@@ -42,6 +42,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description=open("README.md").read(),
     packages=["pMTnet_Omni_Document"],
+    package_data={'pMTnet_Omni_Document': ['validation_data/*']},
     python_requires=">=3.9",
     install_requires=[
         'numpy==1.22.4',

@@ -4,5 +4,12 @@ pMTnet Omni Document
 Document for pMTnet Omni
 """
 
-__version__ = "0.0.3"
+import os 
+
+__version__ = "0.0.4"
 __author__ = "Yi Han, Yuqiu Yang, Tao Wang"
+
+# location would be pMTnet_Omni_Document/pMTnet_Omni_Document
+location = os.path.dirname(os.path.realpath(__file__))
+# We join .. to go back a level where the validation_data folder resides
+validation_data_path = os.path.join(location, "..", "validation_data")

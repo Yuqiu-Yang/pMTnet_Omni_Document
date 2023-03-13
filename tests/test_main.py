@@ -65,12 +65,21 @@ def test_parser_help(cmdarg):
 def test_pmtnet_omni_document_main(mocker, file_path, validation_data_path, output_folder_path):
     cmdargs: mocker.MagicMock = mocker.MagicMock() 
     cmdargs.file_path = file_path
-    cmdargs.validation_data_path = validation_data_path
+    # cmdargs.validation_data_path = validation_data_path
     cmdargs.output_folder_path = output_folder_path
 
     try:
         __main__.main(cmdargs=cmdargs)
     except SystemExit:
+        try:
+            os.remove("./tests/test_data/df_curated.csv")
+            os.remove("./tests/test_data/df_curated_antigen_dropped.csv")
+            os.remove("./tests/test_data/df_curated_invalid_v.csv")
+            os.remove("./tests/test_data/df_curated_mhc_alpha_dropped.csv")
+            os.remove("./tests/test_data/df_curated_mhc_beta_dropped.csv")
+            os.remove("./tests/test_data/mhc_seq_dict.json")
+        except:
+            pass 
         assert True 
     except:
         assert False 
@@ -83,7 +92,7 @@ def test_pmtnet_omni_document_main(mocker, file_path, validation_data_path, outp
 def test_pmtnet_omni_main_document_error(mocker, file_path, validation_data_path, output_folder_path):
     cmdargs: mocker.MagicMock = mocker.MagicMock() 
     cmdargs.file_path = file_path
-    cmdargs.validation_data_path = validation_data_path
+    # cmdargs.validation_data_path = validation_data_path
     cmdargs.output_folder_path = output_folder_path
 
     try:
@@ -91,5 +100,14 @@ def test_pmtnet_omni_main_document_error(mocker, file_path, validation_data_path
     except SystemExit:
         assert False 
     except:
+        try:
+            os.remove("./tests/test_data/df_curated.csv")
+            os.remove("./tests/test_data/df_curated_antigen_dropped.csv")
+            os.remove("./tests/test_data/df_curated_invalid_v.csv")
+            os.remove("./tests/test_data/df_curated_mhc_alpha_dropped.csv")
+            os.remove("./tests/test_data/df_curated_mhc_beta_dropped.csv")
+            os.remove("./tests/test_data/mhc_seq_dict.json")
+        except:
+            pass 
         assert True 
 
