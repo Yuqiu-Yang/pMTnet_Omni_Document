@@ -2,13 +2,13 @@
 import os
 from copy import deepcopy
 import pandas as pd
-import numpy as np 
-import json 
+import numpy as np
+import json
 from json import JSONEncoder
 
-# PyTorch module 
-import torch 
-import esm 
+# PyTorch module
+import torch
+import esm
 
 # String operation
 import re
@@ -19,7 +19,7 @@ from tqdm import tqdm
 # Typing
 from typing import Tuple, Optional
 
-# Global variable 
+# Global variable
 from pMTnet_Omni_Document import validation_data_path
 
 
@@ -54,7 +54,8 @@ def check_column_names(df: pd.DataFrame) -> pd.DataFrame:
     df_cols = df.columns.tolist()
     for i in range(len(df_cols)):
         # We get rid of white spaces from each column
-        df[df_cols[i]] = df[df_cols[i]].astype('str').str.replace(' ', '', regex=False)
+        df[df_cols[i]] = df[df_cols[i]].astype(
+            'str').str.replace(' ', '', regex=False)
         df_cols[i] = re.sub(r'(?<=tcr).*(?=species)', "_", df_cols[i])
         df_cols[i] = re.sub(r'(?<=pmhc).*(?=species)', "_", df_cols[i])
     df.columns = df_cols
@@ -141,22 +142,24 @@ def check_species(df: pd.DataFrame) -> pd.DataFrame:
 def check_v_gene_allele(df: pd.DataFrame,
                         a_reference_df: pd.DataFrame,
                         b_reference_df) -> pd.DataFrame:
-    
+
     # For each va vb we split the gene and the alelle (split by *)
-    # If gene can not be found in the database, this record should be discarded 
-    # If alelle can not be found 
-    # (this includes situations where the alelle is not provided and 
+    # If gene can not be found in the database, this record should be discarded
+    # If alelle can not be found
+    # (this includes situations where the alelle is not provided and
     # alelle is provided but can not be found)
     # we give a warning, and replace with the reference (the smallest number usu. 01)
-    
+
     # We first split the reference va/vb via *
     ref_dfs = {'va': deepcopy(a_reference_df),
                'vb': deepcopy(b_reference_df)}
-    
+
     for column_name in ref_dfs:
-        ref_dfs[column_name][['gene', 'allele']] = ref_dfs[column_name][column_name].str.split("*", expand=True)
-        # We attempt to harmonize the data format 
-        df[column_name] = df[column_name].str.replace(' ', '', regex=False).str.replace('.', '-', regex=False).str.replace(':', '*', regex=False)
+        ref_dfs[column_name][['gene', 'allele']
+                             ] = ref_dfs[column_name][column_name].str.split("*", expand=True)
+        # We attempt to harmonize the data format
+        df[column_name] = df[column_name].str.replace(' ', '', regex=False).str.replace(
+            '.', '-', regex=False).str.replace(':', '*', regex=False)
         for i in tqdm(range(df.shape[0])):
             v = df.at[i, column_name]
             v_gene_allele = v.split('*')
@@ -165,15 +168,16 @@ def check_v_gene_allele(df: pd.DataFrame,
             if v_gene_allele[0] == '':
                 # if v gene is missing
                 # at this point, we assume the seq is provided
-                # Will check later on 
+                # Will check later on
                 continue
             elif v_gene_allele[0] not in ref_dfs[column_name].gene.values:
-                # if v gene is provided 
-                # but can not be found in the reference 
-                # we append "?" and "!" so that later on it will be dropped 
+                # if v gene is provided
+                # but can not be found in the reference
+                # we append "?" and "!" so that later on it will be dropped
                 df.at[i, column_name] = "!!!" + "*".join(v_gene_allele) + "???"
             else:
-                possible_alleles = sorted(ref_dfs[column_name]['allele'][ref_dfs[column_name].gene == v_gene_allele[0]].values)
+                possible_alleles = sorted(
+                    ref_dfs[column_name]['allele'][ref_dfs[column_name].gene == v_gene_allele[0]].values)
                 if v_gene_allele[1] not in possible_alleles:
                     v_gene_allele[1] = possible_alleles[0]
                 df.at[i, column_name] = "*".join(v_gene_allele)
@@ -225,7 +229,7 @@ def check_va_vb(df: pd.DataFrame,
     # Before we start, we curate the data a little
     #################################################
     print("\tCurating human va and vb\n")
-    human_df = check_v_gene_allele(df=human_df, 
+    human_df = check_v_gene_allele(df=human_df,
                                    a_reference_df=human_alpha_tcrs,
                                    b_reference_df=human_beta_tcrs)
     print("\tCurating mouse va and vb\n")
@@ -249,8 +253,8 @@ def check_va_vb(df: pd.DataFrame,
         # If va/vb can not be found in the database, *_ref will be NaN
         # If va/vb is missing, we use the user input.
         # Otherwise, we use the user input
-        # Therefore, when users provided the v gene, we will alwyas use 
-        # the query result (which can be NaN). If not, we use the user seq. 
+        # Therefore, when users provided the v gene, we will alwyas use
+        # the query result (which can be NaN). If not, we use the user seq.
         if va != '':
             human_df.at[i, 'vaseq'] = human_df.at[i, 'vaseq_ref']
         if vb != '':
@@ -433,25 +437,25 @@ def check_mhc(df: pd.DataFrame,
     with open(mhc_path, 'r') as f:
         mhc_dic_keys = f.read().splitlines()
     mhc_dic_keys = set(mhc_dic_keys)
-    # If the mhc names can not be found in our reference 
-    # AND no sequences are provided 
-    # We drop the record 
+    # If the mhc names can not be found in our reference
+    # AND no sequences are provided
+    # We drop the record
     df_mhc_alpha_dropped = df[(~df["mhca"].isin(mhc_dic_keys)) &
                               (df['mhcaseq'] == '')].reset_index(drop=True)
     df_mhc_beta_dropped = df[(~df["mhcb"].isin(mhc_dic_keys)) &
                              (df['mhcbseq'] == '')].reset_index(drop=True)
     df = df[(df["mhca"].isin(mhc_dic_keys)) | (df['mhcaseq'] != '')]
     df = df[(df["mhcb"].isin(mhc_dic_keys)) | (df['mhcbseq'] != '')]
-    # For those mhcs that we can not find in our reference 
-    # we mark them for future process 
+    # For those mhcs that we can not find in our reference
+    # we mark them for future process
     df['mhca_use_seq'] = ~df['mhca'].isin(mhc_dic_keys)
     df['mhcb_use_seq'] = ~df['mhcb'].isin(mhc_dic_keys)
 
     df = df.reset_index(drop=True)
 
     return df, df_mhc_alpha_dropped, df_mhc_beta_dropped
-      
-        
+
+
 def check_peptide(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Check peptide columns 
 
@@ -535,46 +539,45 @@ def encode_mhc_seq(df: pd.DataFrame) -> dict:
     ----------
     df : pd.DataFrame
         A pandas dataframe containing pairing data
-        
+
     Returns
     -----------
     dict
         A dictionary of the mhc sequences and their the EMS embeddings
-    
+
     """
-    # Create the ESM2 model 
-    # This will download the model if this is the first time 
+    # Create the ESM2 model
+    # This will download the model if this is the first time
     # Otherwise, we just load the model
     model, alphabet = esm.pretrained.esm2_t33_650M_UR50D()
     batch_converter = alphabet.get_batch_converter()
     model.eval()
     # We create a new dictionary
-    # The keys would be the sequences (since we are using the 
+    # The keys would be the sequences (since we are using the
     # sequences)
-    # The values would be the ESM embedding 
+    # The values would be the ESM embedding
     mhc_seq_dict = {}
     for chain in ['a', 'b']:
         for i in tqdm(range(df.shape[0])):
             use_seq = df.at[i, 'mhc'+chain+'_use_seq']
             mhcseq = df.at[i, 'mhc'+chain+'seq']
-            # If we have not seen the sequence before and 
-            # we are using it, we use esm algorithm to encode it 
+            # If we have not seen the sequence before and
+            # we are using it, we use esm algorithm to encode it
             if (mhcseq not in mhc_seq_dict) and use_seq:
                 data = [(mhcseq, mhcseq)]
                 _, _, batch_tokens = batch_converter(data)
                 with torch.no_grad():
-                    results = model(batch_tokens, repr_layers=[33], return_contacts=True)
+                    results = model(batch_tokens, repr_layers=[
+                                    33], return_contacts=True)
                     mhcseq_encoding = results["representations"][33].numpy()[0]
                 mhc_seq_dict[mhcseq] = mhcseq_encoding
-    
+
     return mhc_seq_dict
 
 
 def read_file(file_path: str,
-            #   background_tcrs_dir: Optional[str] = "./validation_data/",
-            #   mhc_path: Optional[str] = "./validation_data/valid_mhc.txt",
-              save_results: bool=False, 
-              output_folder_path: Optional[str]=None,
+              save_results: bool = False,
+              output_folder_path: Optional[str] = None,
               **kwargs) -> Tuple[pd.DataFrame, dict]:
     """Reads in user dataframe and performs some basic data curation 
 
@@ -582,25 +585,21 @@ def read_file(file_path: str,
     -----------
     file_path: str
         Path to the dataframe
-    background_tcrs_dir: str
-        The directory with background TCR datasets 
-    mhc_path: str
-        The file path to valid mhcs 
     save_results: bool
         Whether or not the save the result 
     output_folder_path: str
         The path to the output folder 
-        
+
     Returns
     -------
     pd.DataFrame
         A curated pandas dataframe 
 
     """
-    # Set validation data paths 
+    # Set validation data paths
     background_tcrs_dir = validation_data_path
     mhc_path = os.path.join(validation_data_path, "valid_mhc.txt")
-    # Read data 
+    # Read data
     print('Attempting to read in the dataframe...\n')
     df = pd.read_csv(file_path, **kwargs).fillna('')
     print("Number of rows in raw dataset: " + str(df.shape[0]))
@@ -612,42 +611,51 @@ def read_file(file_path: str,
     df = check_species(df=df)
     # Check VA VB
     print("Check va, vb information\n")
-    df, invalid_v_df = check_va_vb(df=df, background_tcrs_dir=background_tcrs_dir)
+    df, invalid_v_df = check_va_vb(
+        df=df, background_tcrs_dir=background_tcrs_dir)
     print("Number of rows in processed dataset: " + str(df.shape[0])+"\n")
-    print("Number of rows dropped due to V genes: " + str(invalid_v_df.shape[0])+"\n")
+    print("Number of rows dropped due to V genes: " +
+          str(invalid_v_df.shape[0])+"\n")
     print("NOTE that if the name of an V gene is provided but can not be found in the reference data, it will be dropped.\n")
     # Check MHC
     print("Infering MHC information\n")
     df = infer_mhc_info(df=df)
     print("Checking MHC information\n")
-    df, df_mhc_alpha_dropped, df_mhc_beta_dropped = check_mhc(df=df, mhc_path=mhc_path)
+    df, df_mhc_alpha_dropped, df_mhc_beta_dropped = check_mhc(
+        df=df, mhc_path=mhc_path)
     print("Number of rows in processed dataset: " + str(df.shape[0])+"\n")
-    print("Number of rows dropped due to missing or incorrect mhc alpha: " + str(df_mhc_alpha_dropped.shape[0])+"\n")
-    print("Number of rows dropped due to missing or incorrect mhc beta: " + str(df_mhc_beta_dropped.shape[0])+"\n")
+    print("Number of rows dropped due to missing or incorrect mhc alpha: " +
+          str(df_mhc_alpha_dropped.shape[0])+"\n")
+    print("Number of rows dropped due to missing or incorrect mhc beta: " +
+          str(df_mhc_beta_dropped.shape[0])+"\n")
     print("NOTE that if the name of an MHC can not be found in the reference data or is not provided and the sequence is not provided, it will be dropped. \n")
     # Check peptide
     print("Checking peptide information\n")
     df, df_antigen_dropped = check_peptide(df=df)
     print("Number of rows in processed dataset: " + str(df.shape[0])+"\n")
-    print("Number of rows dropped due to peptide being longer than 30: " + str(df_antigen_dropped.shape[0])+"\n")
+    print("Number of rows dropped due to peptide being longer than 30: " +
+          str(df_antigen_dropped.shape[0])+"\n")
     # Check aa sequences
     print("Checking AA sequences\n")
     df = check_amino_acids_columns(df=df)
     # Encode MHCs if any
     print("Encoding MHCs\n")
     mhc_seq_dict = encode_mhc_seq(df=df)
-    
+
     if save_results:
         if output_folder_path is None:
             output_folder_path = os.path.dirname(file_path)
-        df.to_csv(os.path.join(output_folder_path, "df_curated.csv"), sep=',', index=False)
-        invalid_v_df.to_csv(os.path.join(output_folder_path, "df_curated_invalid_v.csv"), sep=',', index=False)
-        df_mhc_alpha_dropped.to_csv(os.path.join(output_folder_path, "df_curated_mhc_alpha_dropped.csv"), sep=',', index=False)
-        df_mhc_beta_dropped.to_csv(os.path.join(output_folder_path, "df_curated_mhc_beta_dropped.csv"), sep=',', index=False)
-        df_antigen_dropped.to_csv(os.path.join(output_folder_path, "df_curated_antigen_dropped.csv"), sep=',', index=False)
+        df.to_csv(os.path.join(output_folder_path,
+                  "df_curated.csv"), sep=',', index=False)
+        invalid_v_df.to_csv(os.path.join(
+            output_folder_path, "df_curated_invalid_v.csv"), sep=',', index=False)
+        df_mhc_alpha_dropped.to_csv(os.path.join(
+            output_folder_path, "df_curated_mhc_alpha_dropped.csv"), sep=',', index=False)
+        df_mhc_beta_dropped.to_csv(os.path.join(
+            output_folder_path, "df_curated_mhc_beta_dropped.csv"), sep=',', index=False)
+        df_antigen_dropped.to_csv(os.path.join(
+            output_folder_path, "df_curated_antigen_dropped.csv"), sep=',', index=False)
         with open(os.path.join(output_folder_path, "mhc_seq_dict.json"), 'w') as handle:
-            json.dump(mhc_seq_dict, handle, cls=NumpyArrayEncoder) 
-        
+            json.dump(mhc_seq_dict, handle, cls=NumpyArrayEncoder)
+
     return df, mhc_seq_dict
-
-

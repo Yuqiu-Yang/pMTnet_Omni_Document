@@ -43,8 +43,6 @@ parser.add_argument("--author", action="version", version=__author__,
 
 # User input
 parser.add_argument("--file_path", help="The path to the user data file")
-# parser.add_argument("--validation_data_path",
-#                     help="The path to the validation data files")
 parser.add_argument("--na_values", nargs='+', type=str,
                     default=[], help="Additional strings to recognize as NA/NaN.")
 
@@ -75,17 +73,12 @@ def main(cmdargs: argparse.Namespace):
     else:
         raise Exception("Only .txt, .tsv, and .csv are accepted.")
 
-    # background_tcrs_dir = cmdargs.validation_data_path
-    # mhc_path = os.path.join(cmdargs.validation_data_path, "valid_mhc.txt")
+    _, _ = read_file(file_path=file_path,
+                     save_results=True,
+                     output_folder_path=cmdargs.output_folder_path,
+                     sep=sep,
+                     na_values=cmdargs.na_values)
 
-    _, _ = read_file(file_path=file_path, 
-                    # background_tcrs_dir=background_tcrs_dir,
-                    # mhc_path=mhc_path,
-                    save_results=True,
-                    output_folder_path=cmdargs.output_folder_path,
-                    sep=sep,
-                    na_values=cmdargs.na_values)
-    
     sys.exit(0)
 
 

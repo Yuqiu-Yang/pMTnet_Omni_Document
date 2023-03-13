@@ -1,5 +1,5 @@
 import pytest
-import os 
+import os
 import pandas as pd
 from copy import deepcopy
 
@@ -19,7 +19,7 @@ common_column_names = ["va", "cdr3a", "vaseq", "vb", "cdr3b", "vbseq",
                        "peptide", "mhc", "mhcseq",
                        "tcr_species", "pmhc_species"]
 
-background_tcrs_dir="./validation_data"
+background_tcrs_dir = "./pMTnet_Omni_Document/validation_data"
 human_alpha_tcrs = pd.read_csv(os.path.join(
     background_tcrs_dir, "human_alpha.txt"), sep="\t", header=0)[["va", "vaseq"]].drop_duplicates()
 human_beta_tcrs = pd.read_csv(os.path.join(
@@ -80,6 +80,7 @@ def test_check_species(tcr_species, pmhc_species):
 ########################
 # va vb
 
+
 @pytest.mark.parametrize("a_reference_df, b_reference_df", [
     (human_alpha_tcrs, human_beta_tcrs)
 ])
@@ -90,13 +91,14 @@ def test_check_v_gene_allele(a_reference_df, b_reference_df):
         check_v_gene_allele(df, a_reference_df, b_reference_df)
         assert True
     except:
-        assert False 
+        assert False
+
 
 @pytest.mark.parametrize("df, expected", [
     (df_0, 0)
 ])
 def test_check_va_vb(df, expected):
-    df, invalid_df = check_va_vb(df, background_tcrs_dir="./validation_data/")
+    df, invalid_df = check_va_vb(df, background_tcrs_dir="./pMTnet_Omni_Document/validation_data/")
     assert invalid_df.shape[0] == expected
 
 ########################
@@ -137,7 +139,7 @@ def test_check_mhc(df):
     try:
         df = check_column_names(df)
         df = infer_mhc_info(df)
-        df, _, _ = check_mhc(df, mhc_path="./validation_data/valid_mhc.txt")
+        df, _, _ = check_mhc(df, mhc_path="./pMTnet_Omni_Document/validation_data/valid_mhc.txt")
         assert True
     except:
         assert False
@@ -169,7 +171,7 @@ def test_check_amino_acids_columns(df):
 
 
 ########################
-# encode mhc sequences 
+# encode mhc sequences
 
 
 @pytest.mark.parametrize("df", [
@@ -179,14 +181,14 @@ def test_encode_mhc_seq(df):
     try:
         df = check_column_names(df)
         df = infer_mhc_info(df)
-        df, _, _ = check_mhc(df, mhc_path="./validation_data/valid_mhc.txt")
+        df, _, _ = check_mhc(df, mhc_path="./pMTnet_Omni_Document/validation_data/valid_mhc.txt")
         df['mhcaseq'] = ['AA' for i in range(4)]
         df['mhca_use_seq'] = [True for i in range(4)]
         encode_mhc_seq(df=df)
         assert True
     except:
         assert False
-        
+
 
 ########################
 # read_file
@@ -196,12 +198,10 @@ def test_encode_mhc_seq(df):
 def test_read_file():
     try:
         df, mhc_seq_dict = read_file(file_path='./tests/test_data/test_df.csv',
-                    #    background_tcrs_dir="./validation_data/",
-                    #    mhc_path="./validation_data/valid_mhc.txt",
-                       save_results=True,
-                       output_folder_path=None,
-                       sep=",",
-                       header=0)
+                                     save_results=True,
+                                     output_folder_path=None,
+                                     sep=",",
+                                     header=0)
         try:
             os.remove("./tests/test_data/df_curated.csv")
             os.remove("./tests/test_data/df_curated_antigen_dropped.csv")
@@ -210,9 +210,7 @@ def test_read_file():
             os.remove("./tests/test_data/df_curated_mhc_beta_dropped.csv")
             os.remove("./tests/test_data/mhc_seq_dict.json")
         except:
-            pass 
+            pass
         assert True
     except:
         assert False
-
-
