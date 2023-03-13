@@ -6,7 +6,7 @@ Document for pMTnet Omni
 
 import os 
 
-__version__ = "0.0.7"
+__version__ = "0.0.8"
 __author__ = "Yi Han, Yuqiu Yang, Tao Wang"
 
 # location would be pMTnet_Omni_Document/pMTnet_Omni_Document

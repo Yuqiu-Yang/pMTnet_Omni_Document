@@ -43,7 +43,7 @@ mouse_beta_tcrs = mouse_beta_tcrs.rename(columns={'vbseq': 'vbseq_ref'})
     (df_0.drop(columns=["va", "vb", 'mhc']), common_column_names, True),
     (df_0.drop(columns=["vaseq", "vbseq", 'mhcseq']),
      common_column_names, True),
-    (df_0.drop(columns=['cdr3a']), None, False),
+    (df_0.drop(columns=['cdr3a']), None, True),
     (df_0.drop(columns=['mhc', 'mhcseq']), None, False),
     (df_0.drop(columns=['va', 'vaseq']), None, False),
     (df_0.drop(columns=['vb', 'vbseq']), None, False),

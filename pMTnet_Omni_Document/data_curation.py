@@ -66,13 +66,23 @@ def check_column_names(df: pd.DataFrame) -> pd.DataFrame:
     # Get names not presented in the user dataframe
     user_df_set = set(df_cols)
     diff_set = set(common_column_names) - user_df_set
-
+    
+    # Two species MUST be supplied 
     error_messages = "".join(["Column " + name + " can not be found.\n"
-                              for name in ["cdr3a", "cdr3b", "peptide",
-                                           "tcr_species", "pmhc_species"] if name in diff_set])
+                              for name in ["tcr_species", "pmhc_species"] if name in diff_set])
 
     if error_messages != "":
         raise Exception(error_messages)
+    
+    ##################################################
+    # peptide, cdr3a, cdr3b
+    ##################################################
+    # If peptide, cdr3a, cdr3b are missing, we create the columns 
+    # with empty strings 
+    missing_peptides_cdrs = [name for name in ["peptide", "cdr3a", "cdr3b"] if name in diff_set]
+    for p_cdr in missing_peptides_cdrs:
+        df[p_cdr] = ''
+    
     ##################################################
     # mhc mhcseq
     ##################################################
@@ -589,7 +599,9 @@ def read_file(file_path: str,
         Whether or not the save the result 
     output_folder_path: str
         The path to the output folder 
-
+    **kwargs
+        Other arguments taken by the read_csv function
+        
     Returns
     -------
     pd.DataFrame
