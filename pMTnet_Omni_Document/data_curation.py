@@ -271,9 +271,9 @@ def check_va_vb(df: pd.DataFrame,
             human_df.at[i, 'vbseq'] = human_df.at[i, 'vbseq_ref']
 
     human_df = human_df.drop(columns=['vaseq_ref', 'vbseq_ref']).fillna('')
-    invalid_human_df = human_df[(human_df['vaseq'] == '') |
+    invalid_human_df = human_df[(human_df['vaseq'] == '') &
                                 (human_df['vbseq'] == '')].reset_index(drop=True)
-    human_df = human_df[(human_df['vaseq'] != '') &
+    human_df = human_df[(human_df['vaseq'] != '') |
                         (human_df['vbseq'] != '')].reset_index(drop=True)
     print("\tQuerying mouse reference data\n")
     for i in tqdm(range(mouse_df.shape[0])):
@@ -287,9 +287,9 @@ def check_va_vb(df: pd.DataFrame,
             mouse_df.at[i, 'vbseq'] = mouse_df.at[i, 'vbseq_ref']
 
     mouse_df = mouse_df.drop(columns=['vaseq_ref', 'vbseq_ref']).fillna('')
-    invalid_mouse_df = mouse_df[(mouse_df['vaseq'] == '') |
+    invalid_mouse_df = mouse_df[(mouse_df['vaseq'] == '') &
                                 (mouse_df['vbseq'] == '')].reset_index(drop=True)
-    mouse_df = mouse_df[(mouse_df['vaseq'] != '') &
+    mouse_df = mouse_df[(mouse_df['vaseq'] != '') |
                         (mouse_df['vbseq'] != '')].reset_index(drop=True)
 
     df = pd.concat([human_df, mouse_df], axis=0,

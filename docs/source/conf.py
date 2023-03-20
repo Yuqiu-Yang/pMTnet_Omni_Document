@@ -22,7 +22,7 @@ copyright = '2022, Yi Han, Yuqiu Yang, Tao Wang'
 author = 'Yi Han, Yuqiu Yang, Tao Wang'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.8'
+release = '0.0.9'
 
 
 # -- General configuration ---------------------------------------------------
