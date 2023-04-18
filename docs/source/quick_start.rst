@@ -5,13 +5,6 @@ No worries. In this tutorial, we will walk through the basic usage of
 **pMTnet Omni Document** with minimum configuration. 
 If you are truly swamped, we recommend `our online tool <http://lce-test.biohpc.swmed.edu/pmtnet>`_.
 
-.. note:: 
-    Before proceeding, make sure you have all the dependencies and the package 
-    installed in your environment. 
-
-    If not, please check out :doc:`installation_guide`. 
-
-    We will assume that you already have the environment set up. 
 
 .. note::
     We will use the validation data we published along with the package, whose location we 

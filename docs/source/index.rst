@@ -40,24 +40,46 @@ Input Parameters
 Dependencies
 --------------
 
-* python>=3.9
-* numpy==1.22.4
-* pandas==1.5.2
-* tqdm==4.64.1
-* torch==1.13.1
-* fair-esm==2.0.0
+The dependencies of pMTnet Omni Document is fairly standard for a deep learning-based application
 
-Quick (but sloppy) Installation
+.. list-table:: Dependencies
+  :widths: 50 50
+  :align: center
+  :header-rows: 1
+
+  * - Package 
+    - Version 
+  * - python
+    - ``>=3.9``  
+  * - numpy
+    - ``==1.22.4``
+  * - pandas
+    - ``==1.5.2``
+  * - tqdm 
+    - ``==4.64.1``
+  * - torch
+    - ``==1.13.1``
+  * - fair-esm
+    - ``==2.0.0``
+
+Installation
 --------------------------------
 
 .. note:: 
-   This will install *pMTnet_Omni_Document* to your `base` environment. 
-   For a more in-depth instruction, check out our :doc:`installation_guide`. 
+   We highly recommend creating a virtual environment before 
+   proceeding to installing the package. For how to manage virtual
+   environment via ``conda``, check out 
+   `their tutorial <https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#>`_.
 
 .. code:: bash
    
    pip install pMTnet_Omni_Document
 
+To quickly test if it has been installed:
+
+.. code:: bash
+
+  python -m pMTnet_Omni_Document --version 
 
 User Guide / Tutorial
 =====================
@@ -65,7 +87,6 @@ User Guide / Tutorial
    :maxdepth: 1
    :caption: Get Started
 
-   installation_guide
    quick_start
    
 .. toctree::
