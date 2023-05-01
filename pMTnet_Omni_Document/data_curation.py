@@ -262,8 +262,8 @@ def check_va_vb(df: pd.DataFrame,
     # Otherwise, we use the user input
     # Therefore, when users provided the v gene, we will alwyas use
     # the query result (which can be NaN). If not, we use the user seq.
-    va_ind = human_df["va"].isin([''])
-    vb_ind = human_df["vb"].isin([''])
+    va_ind = ~human_df["va"].isin([''])
+    vb_ind = ~human_df["vb"].isin([''])
     human_df.loc[va_ind, 'vaseq'] = human_df.loc[va_ind, 'vaseq_ref']
     human_df.loc[vb_ind, 'vbseq'] = human_df.loc[vb_ind, 'vbseq_ref']
     
@@ -282,8 +282,8 @@ def check_va_vb(df: pd.DataFrame,
     human_df = human_df[(human_df['vaseq'] != '') |
                         (human_df['vbseq'] != '')].reset_index(drop=True)
     print("\tQuerying mouse reference data\n")
-    va_ind = mouse_df["va"].isin([''])
-    vb_ind = mouse_df["vb"].isin([''])
+    va_ind = ~mouse_df["va"].isin([''])
+    vb_ind = ~mouse_df["vb"].isin([''])
     mouse_df.loc[va_ind, 'vaseq'] = mouse_df.loc[va_ind, 'vaseq_ref']
     mouse_df.loc[vb_ind, 'vbseq'] = mouse_df.loc[vb_ind, 'vbseq_ref']    
     
