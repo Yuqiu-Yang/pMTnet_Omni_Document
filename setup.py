@@ -5,7 +5,7 @@ import shutil
 import distutils.cmd
 
 
-VERSION = "0.0.14"
+VERSION = "0.0.15"
 
 class PypiCommand(distutils.cmd.Command):
     

@@ -393,7 +393,8 @@ def infer_mhc_info(df: pd.DataFrame) -> pd.DataFrame:
     df.loc[ind, 'mhcaseq'] = ''
     df.loc[ind, 'mhcbseq'] = mhcseq.loc[ind]
     # For other human class ii HLA 
-    ind = (pmhc_species.isin(['human'])) & (mhc.str.startswith(human_class_ii))
+    ind = (pmhc_species.isin(['human'])) & (mhc.str.startswith(human_class_ii)) & \
+            (mhc.str.contains('/'))
     df.loc[ind, 'mhc_class'] = 'human class ii'
     df.loc[ind, 'mhca'] = mhc_ab.loc[ind, 'mhca']
     df.loc[ind, 'mhcb'] = mhc_ab.loc[ind, 'mhcb']
