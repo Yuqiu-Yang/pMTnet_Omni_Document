@@ -256,19 +256,25 @@ def check_va_vb(df: pd.DataFrame,
     mouse_df = mouse_df.merge(mouse_beta_tcrs, on="vb", how='left')
     # .._df now should have columns va vb vaseq vbseq vaseq_ref vbseq_ref along with others
     print("\tQuerying human reference data\n")
-    for i in tqdm(range(human_df.shape[0])):
-        va = human_df.at[i, 'va']
-        vb = human_df.at[i, 'vb']
-        # If the reference seq of va/vb can be found we use the reference seq
-        # If va/vb can not be found in the database, *_ref will be NaN
-        # If va/vb is missing, we use the user input.
-        # Otherwise, we use the user input
-        # Therefore, when users provided the v gene, we will alwyas use
-        # the query result (which can be NaN). If not, we use the user seq.
-        if va != '':
-            human_df.at[i, 'vaseq'] = human_df.at[i, 'vaseq_ref']
-        if vb != '':
-            human_df.at[i, 'vbseq'] = human_df.at[i, 'vbseq_ref']
+    # If the reference seq of va/vb can be found we use the reference seq
+    # If va/vb can not be found in the database, *_ref will be NaN
+    # If va/vb is missing, we use the user input.
+    # Otherwise, we use the user input
+    # Therefore, when users provided the v gene, we will alwyas use
+    # the query result (which can be NaN). If not, we use the user seq.
+    va_ind = human_df["va"].isin([''])
+    vb_ind = human_df["vb"].isin([''])
+    human_df.loc[va_ind, 'vaseq'] = human_df.loc[va_ind, 'vaseq_ref']
+    human_df.loc[vb_ind, 'vbseq'] = human_df.loc[vb_ind, 'vbseq_ref']
+    
+    # for i in tqdm(range(human_df.shape[0])):
+    #     va = human_df.at[i, 'va']
+    #     vb = human_df.at[i, 'vb']
+        
+    #     if va != '':
+    #         human_df.at[i, 'vaseq'] = human_df.at[i, 'vaseq_ref']
+    #     if vb != '':
+    #         human_df.at[i, 'vbseq'] = human_df.at[i, 'vbseq_ref']
 
     human_df = human_df.drop(columns=['vaseq_ref', 'vbseq_ref']).fillna('')
     invalid_human_df = human_df[(human_df['vaseq'] == '') &
@@ -276,15 +282,20 @@ def check_va_vb(df: pd.DataFrame,
     human_df = human_df[(human_df['vaseq'] != '') |
                         (human_df['vbseq'] != '')].reset_index(drop=True)
     print("\tQuerying mouse reference data\n")
-    for i in tqdm(range(mouse_df.shape[0])):
-        va = mouse_df.at[i, 'va']
-        vb = mouse_df.at[i, 'vb']
-        # If va/vb can be found we use the reference
-        # Otherwise, we use the user input
-        if va != '':
-            mouse_df.at[i, 'vaseq'] = mouse_df.at[i, 'vaseq_ref']
-        if vb != '':
-            mouse_df.at[i, 'vbseq'] = mouse_df.at[i, 'vbseq_ref']
+    va_ind = mouse_df["va"].isin([''])
+    vb_ind = mouse_df["vb"].isin([''])
+    mouse_df.loc[va_ind, 'vaseq'] = mouse_df.loc[va_ind, 'vaseq_ref']
+    mouse_df.loc[vb_ind, 'vbseq'] = mouse_df.loc[vb_ind, 'vbseq_ref']    
+    
+    # for i in tqdm(range(mouse_df.shape[0])):
+    #     va = mouse_df.at[i, 'va']
+    #     vb = mouse_df.at[i, 'vb']
+    #     # If va/vb can be found we use the reference
+    #     # Otherwise, we use the user input
+    #     if va != '':
+    #         mouse_df.at[i, 'vaseq'] = mouse_df.at[i, 'vaseq_ref']
+    #     if vb != '':
+    #         mouse_df.at[i, 'vbseq'] = mouse_df.at[i, 'vbseq_ref']
 
     mouse_df = mouse_df.drop(columns=['vaseq_ref', 'vbseq_ref']).fillna('')
     invalid_mouse_df = mouse_df[(mouse_df['vaseq'] == '') &
@@ -337,88 +348,178 @@ def infer_mhc_info(df: pd.DataFrame) -> pd.DataFrame:
     # Class II starts with IA, IE
     mouse_class_ii = tuple(["H-2-" + i for i in ["IA", "IE"]])
 
-    for i in tqdm(range(df.shape[0])):
-        mhc = df.at[i, "mhc"]
-        mhcseq = df.at[i, "mhcseq"]
-        pmhc_species = df.at[i, "pmhc_species"]
-        if pmhc_species == "human":
-            if mhc.startswith(human_class_i):
-                # For human class I, mhca will be the
-                # input mhc. mhcb will be human_microglobulin
-                df.at[i, 'mhc_class'] = 'human class i'
-                df.at[i, 'mhca'] = mhc
-                df.at[i, 'mhcb'] = "human_microglobulin"
-                df.at[i, 'mhcaseq'] = mhcseq
-                df.at[i, 'mhcbseq'] = ''
-            elif mhc.startswith(human_class_ii):
-                # For human class II, usually alpha beta will both
-                # be provided
-                # However, for DR, its possible that only beta is provided
-                df.at[i, 'mhc_class'] = 'human class ii'
-                mhc_list = mhc.split('/')
-                mhcseq_list = mhcseq.split('/')
-                if len(mhcseq_list) == 1:
-                    mhcseq_list.append('')
-                if (len(mhc_list) == 1) and (mhc.startswith("DR")):
-                    df.at[i, 'mhca'] = "DRA*01:01"
-                    df.at[i, 'mhcb'] = mhc
-                    df.at[i, 'mhcaseq'] = ''
-                    df.at[i, 'mhcbseq'] = mhcseq
-                else:
-                    df.at[i, 'mhca'] = mhc_list[0]
-                    df.at[i, 'mhcb'] = mhc_list[1]
-                    df.at[i, 'mhcaseq'] = mhcseq_list[0]
-                    df.at[i, 'mhcbseq'] = mhcseq_list[1]
-            elif (mhc == '') and ('/' in mhcseq):
-                # MHC is missing users have to provide
-                # seq on both chains separated by /
-                df.at[i, 'mhc_class'] = 'human'
-                mhc_list = mhc.split('/')
-                mhcseq_list = mhcseq.split('/')
-                df.at[i, 'mhca'] = ''
-                df.at[i, 'mhcb'] = ''
-                df.at[i, 'mhcaseq'] = mhcseq_list[0]
-                df.at[i, 'mhcbseq'] = mhcseq_list[1]
-            else:
-                raise ValueError(
-                    "Missing sequence info or class of " + mhc + " can not be determined")
-        elif pmhc_species == "mouse":
-            if mhc != '':
-                mhc = 'H-2-'+mhc
-            if mhc.startswith(mouse_class_i):
-                # For mouse Class I, it's on the alpha
-                # beta will be mouse_microglobulin
-                df.at[i, 'mhc_class'] = 'mouse class i'
-                df.at[i, 'mhca'] = mhc
-                df.at[i, 'mhcb'] = 'mouse_microglobulin'
-                df.at[i, 'mhcaseq'] = mhcseq
-                df.at[i, 'mhcbseq'] = ''
-            elif mhc.startswith(mouse_class_ii):
-                # For mouse Class II, alpha and beta
-                # will share the same mhc
-                mhcseq_list = mhcseq.split('/')
-                if len(mhcseq_list) == 1:
-                    mhcseq_list.append('')
-                df.at[i, 'mhc_class'] = 'mouse class ii'
-                df.at[i, 'mhca'] = mhc+"_alpha"
-                df.at[i, 'mhcb'] = mhc+"_beta"
-                df.at[i, 'mhcaseq'] = mhcseq_list[0]
-                df.at[i, 'mhcbseq'] = mhcseq_list[1]
-            elif (mhc == '') and ('/' in mhcseq):
-                # MHC is missing users have to provide
-                # seq on both chains separated by /
-                df.at[i, 'mhc_class'] = 'mouse'
-                mhc_list = mhc.split('/')
-                mhcseq_list = mhcseq.split('/')
-                df.at[i, 'mhca'] = ''
-                df.at[i, 'mhcb'] = ''
-                df.at[i, 'mhcaseq'] = mhcseq_list[0]
-                df.at[i, 'mhcbseq'] = mhcseq_list[1]
-            else:
-                raise ValueError(
-                    "Missing sequence info or class of " + mhc + " can not be determined")
-        else:
-            raise ValueError(pmhc_species + " is not human or mouse")
+
+    mhc = df['mhc']
+    mhcseq = df['mhcseq']
+    pmhc_species = df['pmhc_species']
+    ind = (pmhc_species.isin(['mouse'])) & (~mhc.isin(['']))
+    mhc.loc[ind] = "H-2-" + mhc.loc[ind].astype(str)
+    mhc_ab = mhc.str.split("/", expand=True)
+    if mhc_ab.shape[1] == 1:
+        # If there is only one column 
+        # We assume its beta as for we will use the mhc df 
+        mhc_ab.columns = ["mhcb"]
+        mhc_ab['mhca'] = ''
+    else:
+        mhc_ab.columns = ["mhca", "mhcb"]
+        
+    mhcseq_ab = mhcseq.str.split('/', expand=True)
+    if mhcseq_ab.shape[1] == 1:
+        # If there is only one column 
+        # We assume its beta 
+        mhcseq_ab.columns = ["mhcbseq"]
+        mhcseq_ab['mhcaseq'] = ''
+    else:
+        mhcseq_ab.columns = ["mhcaseq", "mhcbseq"]
+    #################################
+    # HUMAN 
+    #################################
+    # For human class I, mhca will be the
+    # input mhc. mhcb will be human_microglobulin
+    ind = (pmhc_species.isin(['human'])) & (mhc.str.startswith(human_class_i))
+    df.loc[ind, 'mhc_class'] = 'human class i'
+    df.loc[ind, 'mhca'] = mhc.loc[ind]
+    df.loc[ind, 'mhcb'] = "human_microglobulin"
+    df.loc[ind, 'mhcaseq'] = mhcseq.loc[ind]
+    df.loc[ind, 'mhcbseq'] = ''
+    # For human class II, usually alpha beta will both
+    # be provided
+    # However, for DR, its possible that only beta is provided
+    ind = (pmhc_species.isin(['human'])) & (mhc.str.startswith('DR')) & \
+            (mhc_ab['mhca'].isin(['']))
+    df.loc[ind, 'mhc_class'] = 'human class ii'
+    df.loc[ind, 'mhca'] = "DRA*01:01"
+    df.loc[ind, 'mhcb'] = mhc.loc[ind]
+    df.loc[ind, 'mhcaseq'] = ''
+    df.loc[ind, 'mhcbseq'] = mhcseq.loc[ind]
+    # For other human class ii HLA 
+    ind = (pmhc_species.isin(['human'])) & (mhc.str.startswith(human_class_ii))
+    df.loc[ind, 'mhc_class'] = 'human class ii'
+    df.loc[ind, 'mhca'] = mhc_ab.loc[ind, 'mhca']
+    df.loc[ind, 'mhcb'] = mhc_ab.loc[ind, 'mhcb']
+    df.loc[ind, 'mhcaseq'] = mhcseq_ab.loc[ind, 'mhcaseq']
+    df.loc[ind, 'mhcbseq'] = mhcseq_ab.loc[ind, 'mhcbseq']
+    # For HLA with only mhcseq 
+    ind = (pmhc_species.isin(['human'])) & (mhc.isin([''])) & (mhcseq.str.contains("/"))
+    df.loc[ind, 'mhc_class'] = 'human'
+    df.loc[ind, 'mhca'] = ''
+    df.loc[ind, 'mhcb'] = ''
+    df.loc[ind, 'mhcaseq'] = mhcseq_ab.loc[ind, 'mhcaseq']
+    df.loc[ind, 'mhcbseq'] = mhcseq_ab.loc[ind, 'mhcbseq']
+    
+    #################################
+    # MOUSE
+    #################################
+    # For mouse Class I, it's on the alpha
+    # beta will be mouse_microglobulin
+    ind = (pmhc_species.isin(['mouse'])) & (mhc.str.startswith(mouse_class_i))
+    df.loc[ind, 'mhc_class'] = 'mouse class i'
+    df.loc[ind, 'mhca'] = mhc.loc[ind]
+    df.loc[ind, 'mhcb'] = 'mouse_microglobulin'
+    df.loc[ind, 'mhcaseq'] = mhcseq.loc[ind]
+    df.loc[ind, 'mhcbseq'] = ''
+    # For mouse Class II, alpha and beta
+    # will share the same mhc
+    ind = (pmhc_species.isin(['mouse'])) & (mhc.str.startswith(mouse_class_ii))
+    df.loc[ind, 'mhc_class'] = 'mouse class ii'
+    df.loc[ind, 'mhca'] = mhc.loc[ind].astype(str)+"_alpha"
+    df.loc[ind, 'mhcb'] = mhc.loc[ind].astype(str)+"_beta"
+    df.loc[ind, 'mhcaseq'] = mhcseq_ab.loc[ind, 'mhcaseq']
+    df.loc[ind, 'mhcbseq'] = mhcseq_ab.loc[ind, 'mhcbseq']
+    # For MHC with only mhcseq 
+    ind = (pmhc_species.isin(['mouse'])) & (mhc.isin([''])) & (mhcseq.str.contains("/"))
+    df.loc[ind, 'mhc_class'] = 'mouse'
+    df.loc[ind, 'mhca'] = ''
+    df.loc[ind, 'mhcb'] = ''
+    df.loc[ind, 'mhcaseq'] = mhcseq_ab.loc[ind, 'mhcaseq']
+    df.loc[ind, 'mhcbseq'] = mhcseq_ab.loc[ind, 'mhcbseq']
+    
+    if np.any(df['mhc_class'].isin([""])):
+        ind = df['mhc_class'].isin([""])
+        raise ValueError("Missing sequence info or class of " + np.unique(df.loc[ind,'mhc']) + " can not be determined")
+    
+    # for i in tqdm(range(df.shape[0])):
+    #     mhc = df.at[i, "mhc"]
+    #     mhcseq = df.at[i, "mhcseq"]
+    #     pmhc_species = df.at[i, "pmhc_species"]
+    #     if pmhc_species == "human":
+    #         if mhc.startswith(human_class_i):
+    #             # For human class I, mhca will be the
+    #             # input mhc. mhcb will be human_microglobulin
+    #             df.at[i, 'mhc_class'] = 'human class i'
+    #             df.at[i, 'mhca'] = mhc
+    #             df.at[i, 'mhcb'] = "human_microglobulin"
+    #             df.at[i, 'mhcaseq'] = mhcseq
+    #             df.at[i, 'mhcbseq'] = ''
+    #         elif mhc.startswith(human_class_ii):
+    #             # For human class II, usually alpha beta will both
+    #             # be provided
+    #             # However, for DR, its possible that only beta is provided
+    #             df.at[i, 'mhc_class'] = 'human class ii'
+    #             mhc_list = mhc.split('/')
+    #             mhcseq_list = mhcseq.split('/')
+    #             if len(mhcseq_list) == 1:
+    #                 mhcseq_list.append('')
+    #             if (len(mhc_list) == 1) and (mhc.startswith("DR")):
+    #                 df.at[i, 'mhca'] = "DRA*01:01"
+    #                 df.at[i, 'mhcb'] = mhc
+    #                 df.at[i, 'mhcaseq'] = ''
+    #                 df.at[i, 'mhcbseq'] = mhcseq
+    #             else:
+    #                 df.at[i, 'mhca'] = mhc_list[0]
+    #                 df.at[i, 'mhcb'] = mhc_list[1]
+    #                 df.at[i, 'mhcaseq'] = mhcseq_list[0]
+    #                 df.at[i, 'mhcbseq'] = mhcseq_list[1]
+    #         elif (mhc == '') and ('/' in mhcseq):
+    #             # MHC is missing users have to provide
+    #             # seq on both chains separated by /
+    #             df.at[i, 'mhc_class'] = 'human'
+    #             mhc_list = mhc.split('/')
+    #             mhcseq_list = mhcseq.split('/')
+    #             df.at[i, 'mhca'] = ''
+    #             df.at[i, 'mhcb'] = ''
+    #             df.at[i, 'mhcaseq'] = mhcseq_list[0]
+    #             df.at[i, 'mhcbseq'] = mhcseq_list[1]
+    #         else:
+    #             raise ValueError(
+    #                 "Missing sequence info or class of " + mhc + " can not be determined")
+    #     elif pmhc_species == "mouse":
+    #         if mhc != '':
+    #             mhc = 'H-2-'+mhc
+    #         if mhc.startswith(mouse_class_i):
+    #             # For mouse Class I, it's on the alpha
+    #             # beta will be mouse_microglobulin
+    #             df.at[i, 'mhc_class'] = 'mouse class i'
+    #             df.at[i, 'mhca'] = mhc
+    #             df.at[i, 'mhcb'] = 'mouse_microglobulin'
+    #             df.at[i, 'mhcaseq'] = mhcseq
+    #             df.at[i, 'mhcbseq'] = ''
+    #         elif mhc.startswith(mouse_class_ii):
+    #             # For mouse Class II, alpha and beta
+    #             # will share the same mhc
+    #             mhcseq_list = mhcseq.split('/')
+    #             if len(mhcseq_list) == 1:
+    #                 mhcseq_list.append('')
+    #             df.at[i, 'mhc_class'] = 'mouse class ii'
+    #             df.at[i, 'mhca'] = mhc+"_alpha"
+    #             df.at[i, 'mhcb'] = mhc+"_beta"
+    #             df.at[i, 'mhcaseq'] = mhcseq_list[0]
+    #             df.at[i, 'mhcbseq'] = mhcseq_list[1]
+    #         elif (mhc == '') and ('/' in mhcseq):
+    #             # MHC is missing users have to provide
+    #             # seq on both chains separated by /
+    #             df.at[i, 'mhc_class'] = 'mouse'
+    #             mhc_list = mhc.split('/')
+    #             mhcseq_list = mhcseq.split('/')
+    #             df.at[i, 'mhca'] = ''
+    #             df.at[i, 'mhcb'] = ''
+    #             df.at[i, 'mhcaseq'] = mhcseq_list[0]
+    #             df.at[i, 'mhcbseq'] = mhcseq_list[1]
+    #         else:
+    #             raise ValueError(
+    #                 "Missing sequence info or class of " + mhc + " can not be determined")
+    #     else:
+    #         raise ValueError(pmhc_species + " is not human or mouse")
 
     return df
 
