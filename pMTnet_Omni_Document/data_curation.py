@@ -386,7 +386,7 @@ def infer_mhc_info(df: pd.DataFrame) -> pd.DataFrame:
     # be provided
     # However, for DR, its possible that only beta is provided
     ind = (pmhc_species.isin(['human'])) & (mhc.str.startswith('DR')) & \
-            (mhc_ab['mhca'].isin(['']))
+            (~mhc.str.contains('/'))
     df.loc[ind, 'mhc_class'] = 'human class ii'
     df.loc[ind, 'mhca'] = "DRA*01:01"
     df.loc[ind, 'mhcb'] = mhc.loc[ind]
