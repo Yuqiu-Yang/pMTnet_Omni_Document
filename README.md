@@ -12,7 +12,7 @@
 
 <b>pMTnet Omni</b> is a deep learning algorithm for affinity prediction based on TCR Va, Vb, CDR3a, CDR3b sequences, peptide sequence, and MHC allele types. The predictions can be made for human and mouse alleles, and for both CD8 T cells/MHC class I and CD4 T cells/MHC class II.
 
-Please refer to our paper for more details: [pMTnet Omni paper link here](www.google.com)
+Please refer to our paper for more details: [pMTnet Omni paper link here](https://doi.org/10.1101/2023.12.01.569599)
 
 We host the online tool on [DBAI](http://lce-test.biohpc.swmed.edu/pmtnet), where you can find all the members of the pMTnet 
 family, including [pMTnet V1](https://github.com/tianshilu/pMTnet). 
@@ -64,7 +64,7 @@ conda activate pMTnet_Omni_Document
 python -m pMTnet_Omni_Document --file_path ./df.csv --output_folder_path ./
 ```
 
-3. Go to [our website](http://lce-test.biohpc.swmed.edu/pmtnet) and upload your data including the `.pickle` file. 
+3. Go to [our website](http://lce-test.biohpc.swmed.edu/pmtnet) and upload your data including the `.json` file. 
 
 4. An example output would look like this:
 ![Sample output](/docs/source/images/sample_output.png)

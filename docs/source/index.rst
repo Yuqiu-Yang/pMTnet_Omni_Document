@@ -20,7 +20,7 @@ Here is a quick overview of the structure of the model:
    :width: 600
    :align: center
 
-For a more detailed exploration of our model, please refer to `our paper <https://www.google.com>`_:
+For a more detailed exploration of our model, please refer to `our paper <https://doi.org/10.1101/2023.12.01.569599>`_:
 
 *pMTnet Omni Paper citation here*
 
