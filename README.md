@@ -71,5 +71,21 @@ python -m pMTnet_Omni_Document --file_path ./df.csv --output_folder_path ./
 
 For a more in-depth explanation on input format, check out our [online documentation](https://pmtnet-omni-document.readthedocs.io/en/latest/). 
 
-## CITATION HERE 
+## CITATION
+We have uploaded our article to bioRxiv. To cite
+```
+@article {Han2023.12.01.569599,
+	author = {Yi Han and Yuqiu Yang and Yanhua Tian and Farjana J. Fattah and Mitchell S. von Itzstein and Minying Zhang and Xiongbin Kang and Donghan M. Yang and Jialiang Liu and Yaming Xue and Chaoying Liang and Indu Raman and Chengsong Zhu and Olivia Xiao and Yifei Hu and Jonathan E. Dowell and Jade Homsi and Sawsan Rashdan and Shengjie Yang and Mary E. Gwin and David Hsiehchen and Yvonne Gloria-McCutchen and Ke Pan and Fangjiang Wu and Don Gibbons and Xinlei Wang and Cassian Yee and Junzhou Huang and Alexandre Reuben and Chao Cheng and Jianjun Zhang and David E. Gerber and Tao Wang},
+	title = {pan-MHC and cross-Species Prediction of T Cell Receptor-Antigen Binding},
+	elocation-id = {2023.12.01.569599},
+	year = {2023},
+	doi = {10.1101/2023.12.01.569599},
+	publisher = {Cold Spring Harbor Laboratory},
+	URL = {https://www.biorxiv.org/content/early/2023/12/12/2023.12.01.569599},
+	eprint = {https://www.biorxiv.org/content/early/2023/12/12/2023.12.01.569599.full.pdf},
+	journal = {bioRxiv}
+}
+```
+
+
 
