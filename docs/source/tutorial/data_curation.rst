@@ -75,8 +75,6 @@ To perform data curation, simply call
 .. code-block:: python 
 
     df = read_file(file_path='file/path/here.csv',
-                  background_tcrs_dir="./validation_data/",
-                  mhc_path="./validation_data/valid_mhc.txt",
                   save_df=True,
                   output_folder_path='output/folder/path/',
                   sep=',')

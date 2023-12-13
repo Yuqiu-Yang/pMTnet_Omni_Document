@@ -7,8 +7,6 @@ If you are truly swamped, we recommend `our online tool <http://lce-test.biohpc.
 
 
 .. note::
-    We will use the validation data we published along with the package, whose location we 
-    assume is at ``./validation_data``. 
     
     Make sure your data file which we assume is located at 
     ``./df.csv`` is structured somewhat like the following:
@@ -26,7 +24,7 @@ By using CLI, you only need one line of code.
 
 .. code:: bash 
 
-    python -m pMTnet_Omni_Document --file_path ./df.csv --validation_data_path ./validation_data --output_folder_path ./
+    python -m pMTnet_Omni_Document --file_path ./df.csv --output_folder_path ./
 
 
 Interactive Python 
@@ -40,8 +38,6 @@ Read the file
 
     # Read the file 
     df, mhc_seq_dict = read_file(file_path="./df.csv",
-                                background_tcrs_dir='./validation_data/',
-                                mhc_path="./validation_data/valid_mhc.txt",
                                 save_results=True,
                                 sep=",")
 
@@ -53,11 +49,17 @@ The keys are various MHC sequences and the values are their corresponding
 ESM embeddings.
 
 .. note:: 
+    
     If you see that ``mhca_use_seq`` and/or ``mhcb_user_seq`` columns 
     all have ``False``, then the json file will simply contain an empty 
     dictionary. 
 
+.. note:: 
 
+    If you want to reproduce the training and validation results 
+    in our paper, you can download 
+    `our training data <https://365utsouthwestern-my.sharepoint.com/:x:/g/personal/yuqiu_yang_utsouthwestern_edu/EYBVZgSOuq9HpYNKrb3c5jIB_87GlX5prJ6hNQdaB77ltw?e=36ZmW0>`_ and 
+    `our validation data <https://365utsouthwestern-my.sharepoint.com/:x:/g/personal/yuqiu_yang_utsouthwestern_edu/Eb4tEGiZS4tDtRUvlu_IoKYBf-zm_aojgo0tdVbTl2Au7Q?e=1ezESp>`_.
 
 
 
