@@ -14,7 +14,7 @@ import esm
 import re
 
 # Progress bar
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 # Typing
 from typing import Tuple, Optional

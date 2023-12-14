@@ -1,6 +1,6 @@
-# pMTnet Omni: your one-stop TCR-pMHC affinity prediction algorithm :microscope:
+# pMTnet Omni: pan-MHC and cross-Species Prediction of T Cell Receptor-Antigen Binding :microscope:
 
-![Logo](/assets/logo.png)
+![Logo](/assets/pmtnet_logo.png)
 
 ![forthebadge](/assets/tcr-pmhc.svg)
 ![forthebadge](/assets/deep-learning.svg)

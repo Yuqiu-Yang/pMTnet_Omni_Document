@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. image:: ../../assets/logo.png
+.. image:: ../../assets/pmtnet_logo.png
    :width: 600
 
 **pMTnet Omni**: your one-stop TCR-pMHC affinity prediction algorithm
@@ -50,7 +50,7 @@ The dependencies of pMTnet Omni Document is fairly standard for a deep learning-
   * - Package 
     - Version 
   * - python
-    - ``>=3.9``  
+    - ``>=3.9,<3.11``  
   * - numpy
     - ``==1.22.4``
   * - pandas
