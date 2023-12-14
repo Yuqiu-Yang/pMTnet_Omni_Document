@@ -22,7 +22,7 @@ copyright = '2022, Yi Han, Yuqiu Yang, Tao Wang'
 author = 'Yi Han, Yuqiu Yang, Tao Wang'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.15'
+release = '0.0.16'
 
 
 # -- General configuration ---------------------------------------------------
@@ -61,7 +61,7 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
-html_logo = "../../assets/logo.png"
+html_logo = "../../assets/pmtnet_logo.png"
 html_theme_options = {
     'collapse_navigation': False,
     'sticky_navigation': True,
