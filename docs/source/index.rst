@@ -6,8 +6,8 @@
 .. image:: ../../assets/pmtnet_logo.png
    :width: 600
 
-**pMTnet Omni**: your one-stop TCR-pMHC affinity prediction algorithm
-===========================================================================
+**pMTnet Omni**: pan-MHC and cross-Species Prediction of T Cell Receptor-Antigen Binding
+=============================================================================================
 
 **pMTnet Omni** is a deep learning algorithm for affinity prediction based on 
 TCR Va, Vb, CDR3a, CDR3b sequences, peptide sequence, and MHC allele types.
@@ -22,9 +22,21 @@ Here is a quick overview of the structure of the model:
 
 For a more detailed exploration of our model, please refer to `our paper <https://doi.org/10.1101/2023.12.01.569599>`_:
 
-*pMTnet Omni Paper citation here*
+.. code-block:: text
 
-The online tool are hosted on `DBAI <http://lce-test.biohpc.swmed.edu/pmtnet>`_ where you can upload
+   @article {Han2023.12.01.569599,
+	author = {Yi Han and Yuqiu Yang and Yanhua Tian and Farjana J. Fattah and Mitchell S. von Itzstein and Minying Zhang and Xiongbin Kang and Donghan M. Yang and Jialiang Liu and Yaming Xue and Chaoying Liang and Indu Raman and Chengsong Zhu and Olivia Xiao and Yifei Hu and Jonathan E. Dowell and Jade Homsi and Sawsan Rashdan and Shengjie Yang and Mary E. Gwin and David Hsiehchen and Yvonne Gloria-McCutchen and Ke Pan and Fangjiang Wu and Don Gibbons and Xinlei Wang and Cassian Yee and Junzhou Huang and Alexandre Reuben and Chao Cheng and Jianjun Zhang and David E. Gerber and Tao Wang},
+	title = {pan-MHC and cross-Species Prediction of T Cell Receptor-Antigen Binding},
+	elocation-id = {2023.12.01.569599},
+	year = {2023},
+	doi = {10.1101/2023.12.01.569599},
+	publisher = {Cold Spring Harbor Laboratory},
+	URL = {https://www.biorxiv.org/content/early/2023/12/12/2023.12.01.569599},
+	eprint = {https://www.biorxiv.org/content/early/2023/12/12/2023.12.01.569599.full.pdf},
+	journal = {bioRxiv}
+   }
+
+The online tool is hosted on `DBAI <https://dbai.biohpc.swmed.edu/pmtnet/>`_ where you can upload
 your own dataset and we will crunch the numbers for you. 
 
 In this document, we will mainly focus on two aspects:

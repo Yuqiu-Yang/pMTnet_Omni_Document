@@ -3,8 +3,7 @@ Quick Start Guide
 So I hear your week has been hectic. 
 No worries. In this tutorial, we will walk through the basic usage of 
 **pMTnet Omni Document** with minimum configuration. 
-If you are truly swamped, we recommend `our online tool <http://lce-test.biohpc.swmed.edu/pmtnet>`_.
-
+If you are truly swamped, we recommend `our online tool <https://dbai.biohpc.swmed.edu/pmtnet/>`_.
 
 .. note::
     
@@ -41,12 +40,10 @@ Read the file
                                 save_results=True,
                                 sep=",")
 
+In the output, you will see two files:
+
 ``./df_curated.csv`` will contain all the curated data. You will 
 also see some extra columns in this file. 
-
-``./mhc_seq_dict.json`` is a *json* file of a dictionary.
-The keys are various MHC sequences and the values are their corresponding 
-ESM embeddings.
 
 .. note:: 
     
@@ -54,18 +51,13 @@ ESM embeddings.
     all have ``False``, then the json file will simply contain an empty 
     dictionary. 
 
+``./mhc_seq_dict.json`` is a *json* file of a dictionary.
+The keys are various MHC sequences and the values are their corresponding 
+ESM embeddings.
+
 .. note:: 
 
     If you want to reproduce the training and validation results 
     in our paper, you can download 
     `our training data <https://365utsouthwestern-my.sharepoint.com/:x:/g/personal/yuqiu_yang_utsouthwestern_edu/EYBVZgSOuq9HpYNKrb3c5jIB_87GlX5prJ6hNQdaB77ltw?e=36ZmW0>`_ and 
     `our validation data <https://365utsouthwestern-my.sharepoint.com/:x:/g/personal/yuqiu_yang_utsouthwestern_edu/Eb4tEGiZS4tDtRUvlu_IoKYBf-zm_aojgo0tdVbTl2Au7Q?e=1ezESp>`_.
-
-
-
-
-
-
-
-
-

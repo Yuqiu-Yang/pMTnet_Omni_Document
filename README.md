@@ -14,12 +14,12 @@
 
 Please refer to our paper for more details: [pMTnet Omni paper link here](https://doi.org/10.1101/2023.12.01.569599)
 
-We host the online tool on [DBAI](http://lce-test.biohpc.swmed.edu/pmtnet), where you can find all the members of the pMTnet 
+We host the online tools on [DBAI](https://dbai.biohpc.swmed.edu/pmtnet/), where you can find all the members of the pMTnet 
 family, including [pMTnet V1](https://github.com/tianshilu/pMTnet). 
 
 We have also built a detailed [online documentation](https://pmtnet-omni-document.readthedocs.io/en/latest/) where we guide you step-by-step on how to format your data so it can be accpted by our algorithm.
 
-**_NOTE:_** This is the documentation for the data curation supporting tool for <b>pMTnet Omni</b>. Use this BEFORE you upload your dataset to [DBAI](http://lce-test.biohpc.swmed.edu/pmtnet).
+**_NOTE:_** This is the documentation for the data curation supporting tool for <b>pMTnet Omni</b>. Use this BEFORE you upload your dataset to [DBAI](https://dbai.biohpc.swmed.edu/pmtnet/).
 
 ## Model Overview 
 ![Model Overview](/docs/source/images/overview.png)
