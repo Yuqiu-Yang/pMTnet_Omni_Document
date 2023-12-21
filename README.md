@@ -64,7 +64,7 @@ conda activate pMTnet_Omni_Document
 python -m pMTnet_Omni_Document --file_path ./df.csv --output_folder_path ./
 ```
 
-3. Go to [our website](http://lce-test.biohpc.swmed.edu/pmtnet) and upload your data including the `.json` file. 
+3. Go to [our website](https://dbai.biohpc.swmed.edu/pmtnet/) and upload your data including the `.json` file. 
 
 4. An example output would look like this:
 ![Sample output](/docs/source/images/sample_output.png)
