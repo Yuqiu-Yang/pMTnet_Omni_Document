@@ -36,10 +36,25 @@ For a more detailed exploration of our model, please refer to `our paper <https:
 	journal = {bioRxiv}
    }
 
-The online tool is hosted on `DBAI <https://dbai.biohpc.swmed.edu/pmtnet/>`_ where you can upload
+DBAI
+--------------
+
+To try out pMTnet Omni, we recommend our online tool hosted on `DBAI <https://dbai.biohpc.swmed.edu/pmtnet/>`_ where you can upload
 your own dataset and we will crunch the numbers for you. 
 
-In this document, we will mainly focus on two aspects:
+.. note::
+
+   Just upload the data that conforms with our input requirements to our server and it 
+   will curate the data and crunch the numbers for you. 
+   No need to use pMTnet_Omni_Document for curation. 
+
+
+DIY
+--------------
+
+This documentation, however, could be helpful for you to make sure that the input format 
+conforms with our software. Just remember to upload the original data onto the server and not 
+the pMTnet_Omni_Document curated data. 
 
 Input Format
    A series of detailed explanations as well as functions will be provided to help you organize your dataset so that 

@@ -14,9 +14,6 @@
 
 Please refer to our paper for more details: [pMTnet Omni paper link here](https://doi.org/10.1101/2023.12.01.569599)
 
-We host the online tools on [DBAI](https://dbai.biohpc.swmed.edu/pmtnet/), where you can find all the members of the pMTnet 
-family, including [pMTnet V1](https://github.com/tianshilu/pMTnet). 
-
 We have also built a detailed [online documentation](https://pmtnet-omni-document.readthedocs.io/en/latest/) where we guide you step-by-step on how to format your data so it can be accpted by our algorithm.
 
 **_NOTE:_** This is the documentation for the data curation supporting tool for <b>pMTnet Omni</b>. Use this BEFORE you upload your dataset to [DBAI](https://dbai.biohpc.swmed.edu/pmtnet/).
@@ -24,25 +21,32 @@ We have also built a detailed [online documentation](https://pmtnet-omni-documen
 ## Model Overview 
 ![Model Overview](/docs/source/images/overview.png)
 
-## Dependencies 
+## DBAI :computer:
+To try out pMTnet Omni, we recommend our online tool hosted on [DBAI](https://dbai.biohpc.swmed.edu/pmtnet/), where you can find all the members of the pMTnet 
+family, including [pMTnet V1](https://github.com/tianshilu/pMTnet). 
+
+**_NOTE:_** Just upload the data that conforms with our input requirements to our server and it will curate the data and crunch the numbers for you. No need to use pMTnet_Omni_Document for curation. 
+
+## DIY :muscle: 
+### Dependencies 
 - numpy==1.22.4
 - pandas==1.5.2
 - tqdm==4.64.1
 - torch==1.13.1
 - fair-esm==2.0.0
 
-## Enviroment Setup
+### Enviroment Setup
 ```shell
 conda env create -f pMTnet_Omni_Document_env.yml
 ```
 
-## Installation 
+### Installation 
 ```shell
 conda activate pMTnet_Omni_Document
 pip install pMTnet_Omni_Document
 ```
 
-## Quick Start Guide 
+### Quick Start Guide 
 1. Prepare your dataset so that it looks somewhat like the following:
 ![Sample df](/docs/source/images/sample_df.png)
 Along with the main program, we also published 5 datasets under the `./validation_data` folder. Feel free 
@@ -71,7 +75,7 @@ python -m pMTnet_Omni_Document --file_path ./df.csv --output_folder_path ./
 
 For a more in-depth explanation on input format, check out our [online documentation](https://pmtnet-omni-document.readthedocs.io/en/latest/). 
 
-## CITATION
+### CITATION
 We have uploaded our article to bioRxiv. To cite
 ```
 @article {Han2023.12.01.569599,
