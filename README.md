@@ -27,6 +27,8 @@ family, including [pMTnet V1](https://github.com/tianshilu/pMTnet).
 
 **_NOTE:_** Just upload the data that conforms with our input requirements to our server and it will curate the data and crunch the numbers for you. No need to use pMTnet_Omni_Document for curation. 
 
+<details>
+<summary>DIY </summary>
 ## DIY :muscle: 
 ### Dependencies 
 - numpy==1.22.4
@@ -46,6 +48,8 @@ conda activate pMTnet_Omni_Document
 pip install pMTnet_Omni_Document
 ```
 
+</details>
+
 ### Quick Start Guide 
 1. Prepare your dataset so that it looks somewhat like the following:
 ![Sample df](/docs/source/images/sample_df.png)
@@ -61,6 +65,9 @@ dropped.
 
 **_NOTE:_** On the other hand, if the names are NOT provided, we will use the sequences with minimal curation. 
 
+<details>
+<summary> DIY </summary>
+
 2. Say your dataset is under <i>./df.csv</i>. In your terminal, run 
 ```shell
 conda activate pMTnet_Omni_Document
@@ -73,7 +80,10 @@ python -m pMTnet_Omni_Document --file_path ./df.csv --output_folder_path ./
 4. An example output would look like this:
 ![Sample output](/docs/source/images/sample_output.png)
 
+</details>
+
 For a more in-depth explanation on input format, check out our [online documentation](https://pmtnet-omni-document.readthedocs.io/en/latest/). 
+
 
 ### CITATION
 We have uploaded our article to bioRxiv. To cite
