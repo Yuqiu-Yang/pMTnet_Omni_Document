@@ -12,7 +12,7 @@
 
 <b>pMTnet Omni</b> is a deep learning algorithm for affinity prediction based on TCR Va, Vb, CDR3a, CDR3b sequences, peptide sequence, and MHC allele types. The predictions can be made for human and mouse alleles, and for both CD8 T cells/MHC class I and CD4 T cells/MHC class II.
 
-Please refer to our paper for more details: [pMTnet Omni paper link here](https://doi.org/10.1101/2023.12.01.569599)
+Please refer to our paper for more details: [pMTnet Omni paper link here](https://doi.org/10.1038/s41467-026-73396-3)
 
 We have also built a detailed [online documentation](https://pmtnet-omni-document.readthedocs.io/en/latest/) where we guide you step-by-step on how to format your data so it can be accpted by our algorithm.
 
@@ -88,17 +88,48 @@ For a more in-depth explanation on input format, check out our [online documenta
 ### CITATION
 We have uploaded our article to bioRxiv. To cite
 ```
-@article {Han2023.12.01.569599,
-	author = {Yi Han and Yuqiu Yang and Yanhua Tian and Farjana J. Fattah and Mitchell S. von Itzstein and Minying Zhang and Xiongbin Kang and Donghan M. Yang and Jialiang Liu and Yaming Xue and Chaoying Liang and Indu Raman and Chengsong Zhu and Olivia Xiao and Yifei Hu and Jonathan E. Dowell and Jade Homsi and Sawsan Rashdan and Shengjie Yang and Mary E. Gwin and David Hsiehchen and Yvonne Gloria-McCutchen and Ke Pan and Fangjiang Wu and Don Gibbons and Xinlei Wang and Cassian Yee and Junzhou Huang and Alexandre Reuben and Chao Cheng and Jianjun Zhang and David E. Gerber and Tao Wang},
-	title = {pan-MHC and cross-Species Prediction of T Cell Receptor-Antigen Binding},
-	elocation-id = {2023.12.01.569599},
-	year = {2023},
-	doi = {10.1101/2023.12.01.569599},
-	publisher = {Cold Spring Harbor Laboratory},
-	URL = {https://www.biorxiv.org/content/early/2023/12/12/2023.12.01.569599},
-	eprint = {https://www.biorxiv.org/content/early/2023/12/12/2023.12.01.569599.full.pdf},
-	journal = {bioRxiv}
+@ARTICLE{Han2026-wo,
+  title     = "Deciphering small sequence differences in {T} cell
+               receptor-antigen pairing",
+  author    = "Han, Yi and Yang, Yuqiu and Zhu, James and Fattah, Farjana J and
+               von Itzstein, Mitchell S and Zhang, Minying and Bermack, Casey
+               and Jiang, Peixin and Singh, Shailbala and Tian, Yanhua and Hu,
+               Yifei and Deng, Yafang and Kang, Xiongbin and Yang, Donghan M
+               and Liu, Jialiang and Xue, Yaming and Liang, Chaoying and Raman,
+               Indu and Zhu, Chengsong and Xiao, Olivia and Dowell, Jonathan E
+               and Homsi, Jade and Rashdan, Sawsan and Pan, Ke and Yang,
+               Shengjie and Gwin, Mary E and Hsiehchen, David and
+               Gloria-McCutchen, Yvonne and Wu, Fangjiang and Heymach, John V
+               and Gibbons, Don and Huang, Junzhou and Cheng, Chao and Zhang,
+               Jianjun and Yee, Cassian and Reuben, Alexandre and Gerber, David
+               E and Wang, Tao",
+  abstract  = "T cells have important functions in development and disease
+               processes through T cell receptor (TCR)-dependent activities.
+               Many tools were developed to predict the binding between TCRs
+               and antigens. However, one of the uncertainties is whether such
+               tools can decipher how small changes in the TCRs or antigenic
+               peptides contribute to binding. We develop a deep learning
+               model, pMTnet-omni, which not only predicts the binding vs.
+               non-binding of TCRs towards pMHCs, but also distinguishes the
+               stronger vs. weaker binding of TCRs similar in sequence. We
+               leverage this capability to interpret the biological rules that
+               govern TCR-antigen pairing. This also enables pMTnet-omni to
+               accurately predict variant TCRs with desired stronger or weaker
+               binding to the antigen, in conjunction with a Lab-in-the-Loop
+               (LiL) mechanism. We show that pMTnet-omni can also predict
+               binding of TCRs towards similar pMHCs. Overall, we provide a
+               flexible toolkit for research and translational applications
+               involving antigens and TCRs.",
+  journal   = "Nat. Commun.",
+  publisher = "Springer Science and Business Media LLC",
+  volume    =  17,
+  number    =  1,
+  month     =  jun,
+  year      =  2026,
+  copyright = "https://creativecommons.org/licenses/by-nc-nd/4.0",
+  language  = "en"
 }
+
 ```
 
 
